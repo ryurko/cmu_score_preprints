@@ -1,0 +1,48 @@
+---
+title: "Introduction to Elo ratings"
+description: |
+  An introduction to Elo ratings using NFL game outcomes.
+author: Ron Yurko
+date: July 9, 2024
+categories:
+  - Elo ratings
+  - Brier score
+  - prediction
+---
+
+## Motivation
+
+[Elo ratings](https://en.wikipedia.org/wiki/Elo_rating_system) are one of the most popular approaches for estimating player/team strength across a variety of sports. You can find a number of different sports examples [maintained by sportswriter Neil Paine](https://neilpaine.substack.com/t/elo-ratings), as well as older versions that were featured in the popular website [FiveThirtyEight](https://fivethirtyeight.com/features/the-best-mlb-teams-of-all-time-according-to-elo/). These dynamic ratings are adjusted for opponent strength and can be used for historical comparisons, such as [who is the greatest tennis player of all time?](https://tennisabstract.com/reports/wta_elo_ratings.html), and for predicting outcomes. In this module you will learn the basics of Elo ratings in the context of measuring NFL team strength, walking through steps to implement and assess Elo ratings from scratch in `R`.
+
+## Learning Objectives
+
+By the end of this module, you will be able to:
+
+1. Compute the expected outcome or predicted probability based on player/team ratings.
+2. Update ratings following the observed outcome of a match/game.
+3. Implement the complete Elo ratings framework in `R` for a full NFL season.
+4. Assess Elo rating predictions using Brier score.
+5. Tune the update factor and other settings to yield more optimal predictions.
+
+## Data
+
+The dataset and description are available at the [SCORE Network Data Repository](https://data.scorenetwork.org/football/nfl-game-outcomes.html).
+
+## Module Materials
+
+::: {.callout-warning}
+## Prerequisites
+
+Prior to working on through this module, students are expected to know the following:
+
+* Familiar with `R` with the ability to read and write functions.
+* Some exposure to predicting outcomes with probabilities.
+
+The module has sections indicating which portions are challenging exercises, and is designed to take an undergraduate student roughly 3-4 hours to complete.
+
+:::
+
+[Student assignment qmd file](../module_resources/nfl-elo-ratings/_intro_elo_ratings.qmd)
+
+[View instructor solutions](../module_resources/nfl-elo-ratings/intro_elo_ratings_SOLUTIONS.qmd)
+

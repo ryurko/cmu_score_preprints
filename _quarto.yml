@@ -1,0 +1,36 @@
+project:
+  type: website
+  resources:
+    - "module_resources"
+
+website:
+  title: "CMU SCORE Module Preprint Repository"
+  page-footer: "Maintained by [Ron Yurko](https://www.stat.cmu.edu/~ryurko/)"
+  cookie-consent: true
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - by-statsds-topic.qmd
+      - href: https://data.scorenetwork.org/
+        text: Data Repository
+    right:
+      - icon: twitter
+        href: https://twitter.com/scorenetworkorg
+      - icon: linkedin
+        href: https://www.linkedin.com/company/scorenetworkorg/
+  sidebar:
+    contents: auto
+    collapse-level: 1
+  repo-url: https://github.com/SCOREnetworkorg/module-repository
+  repo-actions: [edit, issue]
+
+format:
+  html:
+    theme:
+      - cosmo
+      - score.scss
+    toc: true
+
+execute:
+  freeze: auto

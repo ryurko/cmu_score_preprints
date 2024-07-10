@@ -1,0 +1,13 @@
+---
+title: "CMU SCORE Module Preprint Repository"
+---
+
+This page contains module materials for the [SCORE Network](https://scorenetwork.org/index.html) that were created by faculty and students from the [Department of Statistics & Data Science at Carnegie Mellon University](https://www.cmu.edu/dietrich/statistics-datascience/index.html).
+
+This preprint repository enables you to search for modules by either sport (along the left), or you can browse [by statistics and data science topic](by-statsds-topic.qmd).
+
+Please note that these material have not yet completed the required pedagogical and industry peer reviews to become a [published module on the SCORE Network](https://modules.scorenetwork.org/). However, instructors are still welcome to use these materials if they are so inclined.
+
+_The development of the SCORE with Data network is funded by the National Science Foundation (award 2142705)._
+
+
