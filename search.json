@@ -1,83 +1,5 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "CMU SCORE Module Preprint Repository",
-    "section": "",
-    "text": "This page contains module materials for the SCORE Network that were created by faculty and students from the Department of Statistics & Data Science at Carnegie Mellon University.\nThis preprint repository enables you to search for modules by either sport (along the left), or you can browse by statistics and data science topic.\nPlease note that these material have not yet completed the required pedagogical and industry peer reviews to become a published module on the SCORE Network. However, instructors are still welcome to use these materials if they are so inclined.\nThe development of the SCORE with Data network is funded by the National Science Foundation (award 2142705)."
-  },
-  {
-    "objectID": "baseball/verlander-pitchtype.html",
-    "href": "baseball/verlander-pitchtype.html",
-    "title": "Exploring Justin Verlander’s pitch type by count",
-    "section": "",
-    "text": "After nearly two full seasons due to injury, at the age of 39 Justin Verlander returned for the 2022 season to win the American League Cy Young award and World Series with the Houston Astros. Leading the league in a variety of statistics, Verlander dominated in his starts throughout the season. Pitch selection has played a key role into Verlander’s recent success with the Astros. Verlander throws four types of pitches (using MLB’s abbreviation): fastball (FF), slider (SL), curveball (CB), and changeup (CH). However, pitches are thrown in the context of an at-bat where the ball-strike count starts 0-0, and progresses until either the batter strikes out (reaches three strikes), is walked (reaches four balls), or is either hit-by-pitch or hits the ball in-play. As the count varies, pitchers often decide to favor certain pitches over others, e.g, with three balls (i.e., 3-X counts) the pitcher may favor throwing more accurate fastballs relative to out-of-the-zone offspeed pitches that are favored with two strikes (i.e., X-2 counts).\nAs defined above, pitch type and count are categorical variables. In this module, you will work with datasets of pitches thrown by Justin Verlander during both the 2019 (see 2019 Pitches tab) and 2022 season (see 2022 Pitches tab). You will learn about exploring, testing, and visualizing 2D categorical data to discover if there is a relationship between the count and the type of pitch Verlander throws.",
-    "crumbs": [
-      "Home",
-      "Baseball",
-      "Exploring Justin Verlander's pitch type by count"
-    ]
-  },
-  {
-    "objectID": "baseball/verlander-pitchtype.html#motivation",
-    "href": "baseball/verlander-pitchtype.html#motivation",
-    "title": "Exploring Justin Verlander’s pitch type by count",
-    "section": "",
-    "text": "After nearly two full seasons due to injury, at the age of 39 Justin Verlander returned for the 2022 season to win the American League Cy Young award and World Series with the Houston Astros. Leading the league in a variety of statistics, Verlander dominated in his starts throughout the season. Pitch selection has played a key role into Verlander’s recent success with the Astros. Verlander throws four types of pitches (using MLB’s abbreviation): fastball (FF), slider (SL), curveball (CB), and changeup (CH). However, pitches are thrown in the context of an at-bat where the ball-strike count starts 0-0, and progresses until either the batter strikes out (reaches three strikes), is walked (reaches four balls), or is either hit-by-pitch or hits the ball in-play. As the count varies, pitchers often decide to favor certain pitches over others, e.g, with three balls (i.e., 3-X counts) the pitcher may favor throwing more accurate fastballs relative to out-of-the-zone offspeed pitches that are favored with two strikes (i.e., X-2 counts).\nAs defined above, pitch type and count are categorical variables. In this module, you will work with datasets of pitches thrown by Justin Verlander during both the 2019 (see 2019 Pitches tab) and 2022 season (see 2022 Pitches tab). You will learn about exploring, testing, and visualizing 2D categorical data to discover if there is a relationship between the count and the type of pitch Verlander throws.",
-    "crumbs": [
-      "Home",
-      "Baseball",
-      "Exploring Justin Verlander's pitch type by count"
-    ]
-  },
-  {
-    "objectID": "baseball/verlander-pitchtype.html#learning-objectives",
-    "href": "baseball/verlander-pitchtype.html#learning-objectives",
-    "title": "Exploring Justin Verlander’s pitch type by count",
-    "section": "Learning Objectives",
-    "text": "Learning Objectives\nBy the end of this module, you will be able to:\n\nCreate and assess different visualizations of 2D categorical data.\nConduct and interpret chi-squared tests of independence.\nCreate mosaic plots to assess relationship between two categorical variables.",
-    "crumbs": [
-      "Home",
-      "Baseball",
-      "Exploring Justin Verlander's pitch type by count"
-    ]
-  },
-  {
-    "objectID": "baseball/verlander-pitchtype.html#data",
-    "href": "baseball/verlander-pitchtype.html#data",
-    "title": "Exploring Justin Verlander’s pitch type by count",
-    "section": "Data",
-    "text": "Data\nThe dataset and description are available at the SCORE Network Data Repository.",
-    "crumbs": [
-      "Home",
-      "Baseball",
-      "Exploring Justin Verlander's pitch type by count"
-    ]
-  },
-  {
-    "objectID": "baseball/verlander-pitchtype.html#module",
-    "href": "baseball/verlander-pitchtype.html#module",
-    "title": "Exploring Justin Verlander’s pitch type by count",
-    "section": "Module",
-    "text": "Module\nThis module was created with ISLE: https://isle.stat.cmu.edu/SCORE/pitchtype/",
-    "crumbs": [
-      "Home",
-      "Baseball",
-      "Exploring Justin Verlander's pitch type by count"
-    ]
-  },
-  {
-    "objectID": "by-statsds-topic.html",
-    "href": "by-statsds-topic.html",
-    "title": "Modules By Topic",
-    "section": "",
-    "text": "Exploring Justin Verlander’s pitch type by count\n\n\n\n\n\n\n2D categorical data\n\n\nchi-squared test\n\n\nmosaic plots\n\n\n\nAn introduction to 2D categorical data \n\n\n\n\n\nJul 9, 2024\n\n\nRon Yurko\n\n\n\n\n\n\n\n\n\n\n\n\nIntroduction to Elo ratings\n\n\n\n\n\n\nElo ratings\n\n\nBrier score\n\n\nprediction\n\n\n\nAn introduction to Elo ratings using NFL game outcomes. \n\n\n\n\n\nJul 9, 2024\n\n\nRon Yurko\n\n\n\n\n\n\n\n\n\n\n\n\nIntroduction to Elo ratings (INSTRUCTOR SOLUTIONS)\n\n\n\n\n\nAn introduction to Elo ratings using NFL game outcomes. \n\n\n\n\n\nRon Yurko\n\n\n\n\n\n\nNo matching items",
-    "crumbs": [
-      "Home",
-      "Modules By Topic"
-    ]
-  },
-  {
     "objectID": "module_resources/nfl-elo-ratings/intro_elo_ratings_SOLUTIONS.html",
     "href": "module_resources/nfl-elo-ratings/intro_elo_ratings_SOLUTIONS.html",
     "title": "Introduction to Elo ratings (INSTRUCTOR SOLUTIONS)",
@@ -182,6 +104,77 @@
     ]
   },
   {
+    "objectID": "baseball/verlander-pitchtype.html",
+    "href": "baseball/verlander-pitchtype.html",
+    "title": "Exploring Justin Verlander’s pitch type by count",
+    "section": "",
+    "text": "After nearly two full seasons due to injury, at the age of 39 Justin Verlander returned for the 2022 season to win the American League Cy Young award and World Series with the Houston Astros. Leading the league in a variety of statistics, Verlander dominated in his starts throughout the season. Pitch selection has played a key role into Verlander’s recent success with the Astros. Verlander throws four types of pitches (using MLB’s abbreviation): fastball (FF), slider (SL), curveball (CB), and changeup (CH). However, pitches are thrown in the context of an at-bat where the ball-strike count starts 0-0, and progresses until either the batter strikes out (reaches three strikes), is walked (reaches four balls), or is either hit-by-pitch or hits the ball in-play. As the count varies, pitchers often decide to favor certain pitches over others, e.g, with three balls (i.e., 3-X counts) the pitcher may favor throwing more accurate fastballs relative to out-of-the-zone offspeed pitches that are favored with two strikes (i.e., X-2 counts).\nAs defined above, pitch type and count are categorical variables. In this module, you will work with datasets of pitches thrown by Justin Verlander during both the 2019 (see 2019 Pitches tab) and 2022 season (see 2022 Pitches tab). You will learn about exploring, testing, and visualizing 2D categorical data to discover if there is a relationship between the count and the type of pitch Verlander throws.",
+    "crumbs": [
+      "Home",
+      "Baseball",
+      "Exploring Justin Verlander's pitch type by count"
+    ]
+  },
+  {
+    "objectID": "baseball/verlander-pitchtype.html#motivation",
+    "href": "baseball/verlander-pitchtype.html#motivation",
+    "title": "Exploring Justin Verlander’s pitch type by count",
+    "section": "",
+    "text": "After nearly two full seasons due to injury, at the age of 39 Justin Verlander returned for the 2022 season to win the American League Cy Young award and World Series with the Houston Astros. Leading the league in a variety of statistics, Verlander dominated in his starts throughout the season. Pitch selection has played a key role into Verlander’s recent success with the Astros. Verlander throws four types of pitches (using MLB’s abbreviation): fastball (FF), slider (SL), curveball (CB), and changeup (CH). However, pitches are thrown in the context of an at-bat where the ball-strike count starts 0-0, and progresses until either the batter strikes out (reaches three strikes), is walked (reaches four balls), or is either hit-by-pitch or hits the ball in-play. As the count varies, pitchers often decide to favor certain pitches over others, e.g, with three balls (i.e., 3-X counts) the pitcher may favor throwing more accurate fastballs relative to out-of-the-zone offspeed pitches that are favored with two strikes (i.e., X-2 counts).\nAs defined above, pitch type and count are categorical variables. In this module, you will work with datasets of pitches thrown by Justin Verlander during both the 2019 (see 2019 Pitches tab) and 2022 season (see 2022 Pitches tab). You will learn about exploring, testing, and visualizing 2D categorical data to discover if there is a relationship between the count and the type of pitch Verlander throws.",
+    "crumbs": [
+      "Home",
+      "Baseball",
+      "Exploring Justin Verlander's pitch type by count"
+    ]
+  },
+  {
+    "objectID": "baseball/verlander-pitchtype.html#learning-objectives",
+    "href": "baseball/verlander-pitchtype.html#learning-objectives",
+    "title": "Exploring Justin Verlander’s pitch type by count",
+    "section": "Learning Objectives",
+    "text": "Learning Objectives\nBy the end of this module, you will be able to:\n\nCreate and assess different visualizations of 2D categorical data.\nConduct and interpret chi-squared tests of independence.\nCreate mosaic plots to assess relationship between two categorical variables.",
+    "crumbs": [
+      "Home",
+      "Baseball",
+      "Exploring Justin Verlander's pitch type by count"
+    ]
+  },
+  {
+    "objectID": "baseball/verlander-pitchtype.html#data",
+    "href": "baseball/verlander-pitchtype.html#data",
+    "title": "Exploring Justin Verlander’s pitch type by count",
+    "section": "Data",
+    "text": "Data\nThe dataset and description are available at the SCORE Network Data Repository.",
+    "crumbs": [
+      "Home",
+      "Baseball",
+      "Exploring Justin Verlander's pitch type by count"
+    ]
+  },
+  {
+    "objectID": "baseball/verlander-pitchtype.html#module",
+    "href": "baseball/verlander-pitchtype.html#module",
+    "title": "Exploring Justin Verlander’s pitch type by count",
+    "section": "Module",
+    "text": "Module\nThis module was created with ISLE: https://isle.stat.cmu.edu/SCORE/pitchtype/",
+    "crumbs": [
+      "Home",
+      "Baseball",
+      "Exploring Justin Verlander's pitch type by count"
+    ]
+  },
+  {
+    "objectID": "by-statsds-topic.html",
+    "href": "by-statsds-topic.html",
+    "title": "Modules By Topic",
+    "section": "",
+    "text": "Exploring Justin Verlander’s pitch type by count\n\n\n\n\n\n\n2D categorical data\n\n\nchi-squared test\n\n\nmosaic plots\n\n\n\nAn introduction to 2D categorical data \n\n\n\n\n\nJul 9, 2024\n\n\nRon Yurko\n\n\n\n\n\n\n\n\n\n\n\n\nIntroduction to Elo ratings\n\n\n\n\n\n\nElo ratings\n\n\nBrier score\n\n\nprediction\n\n\n\nAn introduction to Elo ratings using NFL game outcomes. \n\n\n\n\n\nJul 9, 2024\n\n\nRon Yurko\n\n\n\n\n\n\n\n\n\n\n\n\nIntroduction to Elo ratings (INSTRUCTOR SOLUTIONS)\n\n\n\n\n\nAn introduction to Elo ratings using NFL game outcomes. \n\n\n\n\n\nRon Yurko\n\n\n\n\n\n\nNo matching items",
+    "crumbs": [
+      "Home",
+      "Modules By Topic"
+    ]
+  },
+  {
     "objectID": "football/nfl-elo-ratings.html",
     "href": "football/nfl-elo-ratings.html",
     "title": "Introduction to Elo ratings",
@@ -240,5 +233,12 @@
       "Football",
       "Introduction to Elo ratings"
     ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "CMU SCORE Module Preprint Repository",
+    "section": "",
+    "text": "This page contains module materials for the SCORE Network that were created by faculty and students from the Department of Statistics & Data Science at Carnegie Mellon University.\nThis preprint repository enables you to search for modules by either sport (along the left), or you can browse by statistics and data science topic.\nPlease note that these material have not yet completed the required pedagogical and industry peer reviews to become a published module on the SCORE Network. However, instructors are still welcome to use these materials if they are so inclined.\nThe development of the SCORE with Data network is funded by the National Science Foundation (award 2142705)."
   }
 ]
