@@ -22,7 +22,7 @@ website:
   sidebar:
     contents: auto
     collapse-level: 1
-  repo-url: https://github.com/SCOREnetworkorg/module-repository
+  repo-url: https://github.com/ryurko/cmu_score_preprints
   repo-actions: [edit, issue]
 
 format:
