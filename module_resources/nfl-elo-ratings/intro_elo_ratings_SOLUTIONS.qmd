@@ -125,8 +125,7 @@ calc_expected_score(1400, 1600)
 The expected score for the team is about 0.24, indicating that the team with a rating of 1400 has an estimated 24% chance of beating an opponent with a rating of 1600.
 :::
 
-::: {.callout-important}
-
+::: callout-important
 ## Active Exercise
 
 Next, complete the `calc_new_rating` function that takes in an initial `team_rating`, the `observed_score` and `expected_score` with respect to that team, along with a choice of the `update_factor` $K$ to return the new rating. For now, we will just consider $K = 20$ as the default choice.
@@ -320,7 +319,7 @@ plot_grid(plotlist = division_plots, ncol = 2, align = "hv")
 ```
 :::
 
-## Assessing the Ratings
+### Assessing the Ratings
 
 The result of the `for` loop from above provides us with a dataset that contains the rating for each team after every week. But how do we know if we can trust this approach for estimating team ratings? We can assess the **predictive performance** of the Elo ratings based on the estimated probabilities for every game given the team's ratings entering the game.
 
