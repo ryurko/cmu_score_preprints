@@ -331,7 +331,7 @@ plot_grid(plotlist = division_plots, ncol = 2, align = "hv")
 ```
 :::
 
-## Assessing the Ratings
+### Assessing the Ratings
 
 The result of the `for` loop from above provides us with a dataset that contains the rating for each team after every week. But how do we know if we can trust this approach for estimating team ratings? We can assess the **predictive performance** of the Elo ratings based on the estimated probabilities for every game given the team's ratings entering the game.
 
