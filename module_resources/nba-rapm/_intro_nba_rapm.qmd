@@ -1,0 +1,425 @@
+---
+title: "Introduction to regularized adjusted plus-minus (RAPM)"
+description: |
+  An introduction to ridge regression in the context of estimating basketball player effects.
+author:
+  - name: Ron Yurko
+  - name: Quang Nguyen
+format: html
+callout-icon: false
+---
+
+## Intro and Data
+
+The purpose of this module is to walk through the basics of building a __regularized adjusted plus-minus (RAPM) model__ to estimate the impact of basketball players when they are on the court, while adjusting for the quality of their teammates and opponents. 
+
+We'll use [NBA data available on the SCORE Network Data repository](https://data.scorenetwork.org/basketball/nba-rapm-data.html), that was already constructed for the purpose of building and comparing different approaches for estimating player effects. The data were gathered using the [`hoopR` package](https://hoopr.sportsdataverse.org/), you can find the script for initializing the data on [GitHub](https://github.com/SCOREnetworkorg/sports-data-repository/blob/main/_prep/nba-rapm/init-nba-rapm-data.R).
+
+The following code chunk reads in a dataset that is in a wide form (discussed in detail below) with indicator columns for every player that was observed during the 2022-23 regular season:
+
+```{r}
+#| label: load-rapm-data
+#| warning: FALSE
+#| message: FALSE
+# Need to have the tidyverse installed prior to starting!
+library(tidyverse)
+nba_rapm_data <- read_csv("https://data.scorenetwork.org/data/nba_2223_season_rapm_data.csv.gz")
+```
+
+In this dataset, we have 32,358 unique shifts/stints with 539 players represented by the indicator variables (+1 if on court for home team, -1 if on court for away team, and 0 if not on court). Additional context is captured by the following variables:
+
+| Variable | Description |
+|----|-------------|
+| `game_id` |	Unique game ID |
+| `stint_id` |	Unique identifier within a game for a stint for particular combination of home and away lineup (in appearance of order, where 1 is the first stint in the game) |
+| `n_pos` |	Number of possessions (combined for both home and away) during the observed stint |
+| `home_points` |	Number of points scored by the home team during the stint |
+| `away_points` |	Number of points scored by the away team during the stint |
+| `minutes` |	Length of the stint in terms of minutes played |
+| `margin` | Common response for RAPM models defined as: (`home_points` - `away_points`) / `n_pos` * 100 |
+
+Since the above dataset does not include player names, only unique identifiers, we will also load in a table that includes player names to join over with the eventual results of the analysis. You can use the code chunk below to read in this table from the [SCORE Network Data repository](https://data.scorenetwork.org/basketball/nba-rapm-data.html):
+
+```{r}
+#| label: load-player-table
+nba_player_table <- read_csv("https://data.scorenetwork.org/data/nba_2223_player_table.csv")
+nba_player_table
+```
+
+## Background Information
+
+Measuring a player's effect on game outcomes is one of the most fundamental tasks in sports analytics. But this is not a simple thing to do, and varies greatly between sports! In sports like basketball and hockey, a popular starting point for measuring a player's impact is [__Plus-Minus__](https://en.wikipedia.org/wiki/Plus%E2%80%93minus_(sports)) which is defind as:
+
+> Plus-Minus = points scored by team when player is on court - points scored by opposing team when player is on court
+
+You can find leaderboards for this statistic on the [NBA stats website](https://www.nba.com/stats/players/traditional?PerMode=Totals&dir=D&sort=PLUS_MINUS).
+
+::: callout-important
+## Thought Exercise
+
+**QUESTION:** What do you think are potential limitations with the above Plus-Minus statistic? 
+
+**ANSWER:** 
+
+**INSERT YOUR ANSWER HERE**
+
+:::
+
+We'll now walk through how to improve on Plus-Minus with regression-based approaches using the NBA data loaded in the beginning of the module. 
+
+## Learn By Doing
+
+::: callout-warning
+## WARNING: Code chunk evaluation is turned off
+
+You will need to delete `#| eval:false` from every code chunk in the remainder of this module in order to run the code after you fill in the missing portions in the Active Exercises.
+:::
+
+### Adjusted Plus-Minus (APM)
+
+Introduced by [Rosenbaum (2004)](https://www.82games.com/comm30.htm), __adjusted Plus-Minus (APM)__ is a regression-based approach to estimate a player’s impact on game outcomes while accounting for their teammates and opponents. How does this work? APM is a regression model where the predictors are __indicator variable for every player__ denoting if they are on the court. The response variable is some type of outcome observed as the possession or shift-level (explained below). To be more explicit:
+
+* There are 10 players on the court at a time during a basketball game, 5 on side and 5 on the other.
+
+* A basketball game has $T$ _shifts_ (or _stints_) that are periods of time without substitutions (i.e., there are no changes to who are playing on the court).
+
+* We will consider each 10-person shift $t = 1,\dots,T$ to be a single observation.
+
+* The __reponse variable__ is some type of game outcome measure, such as the score differential during shift $t$ from the view of the home team (i.e., home team score - away team score).
+
+* The __predictor variables__ represented in the $T \times p$ design matrix $X$ are columns for each of the $p$ players in the league, such that:
+
+    + $X_{tj} = 1$ if player $j$ is on the court for the home team during shift $t$
+    + $X_{tj} = -1$ if player $j$ is on the court for the away team during shift $t$
+    + $X_{tj} = 0$ if player $j$ is not on the court during shift $t$
+    
+::: callout-note
+
+There are a number of different ways to set-up the APM design matrix $X$, but we will only consider this design based on home and away team status in this module.
+
+:::
+
+As discussed at the beginning of this module, the `nba_rapm_data` you loaded contains these player indicator variables. The code chunk below prints the first so many rows of this dataset:
+
+```{r}
+#| label: preview-rapm-data
+nba_rapm_data
+```
+
+
+The [Rosenbaum (2004)](https://www.82games.com/comm30.htm) implementation of APM relies on __weighted least squares__, where you solve for the $p$-dimensional vector of player coefficients $\boldsymbol{\beta}$ using a modified version of the traditional least squares model:
+
+$$
+\hat{\boldsymbol{\beta}} = \underset{\boldsymbol{\beta} \in \mathbb{R}^p}{\text{arg min}} \sum_{t = 1}^T n_t (y_t - X_t \boldsymbol{\beta})^2
+$$
+* $y_t$ is the response variable during shift $t$,
+* $X_t$ is the row of the design matrix for shift $t$, and
+* $n_t$ is the number possessions during shift $t$.
+
+::: callout-important
+## Thought Exercise
+
+**QUESTION:** What do you think is the motivation behind using _weighted_ least squares rather than ordinary least squares without weights? Think about the choice of using the number of possessions as the weights.
+
+**ANSWER:** 
+
+**INSERT YOUR ANSWER HERE**
+
+:::
+
+We'll now work through fitting and intepreting the APM model in the context of NBA 2022-23 regular season data. 
+
+First, compute the score differential as `score_diff = home_points - away_points` using `mutate()`. Append this new column to the `nba_rapm_data` dataset.
+
+```{r}
+#| label: compute-score-diff
+# INSERT CODE
+```
+
+Next, create a new dataset named `nba_apm_model_data` that contains only the response `score_diff` and the player columns:
+
+```{r}
+#| label: init-model-data
+# INSERT CODE
+```
+
+Next, fit the model using the code below:
+
+```{r}
+#| label: fit-weighted-apm
+#| eval: false
+rosenbaum_model <- lm(score_diff ~ 0 + ., data = nba_apm_model_data,
+                      weights = nba_rapm_data$n_pos)
+```
+
+::: callout-note
+
+Compared to fitting a linear regression model in `R` using the `lm()` with a small number of predictors, this model has the following aspects:
+
+* The intercept term is not included by specifying `0` at the beginning of the formula,
+
+* Using `+ .` in the formula tells `lm()` to use every column in the data as predictors,
+
+* `weights = nba_rapm_data$n_pos` ensures that we are using weighted least squares with the `n_pos` column (number of possessions during the shift) as the weights.
+
+:::
+
+::: callout-important
+## Thought Exercise
+
+**QUESTION:** Why is it appropriate to remove the intercept term in the above regression model?
+
+**ANSWER:** 
+
+**INSERT YOUR ANSWER HERE**
+
+:::
+
+We're not going to view the summary of this model since it is a bit of a mess (there are many player variables!). Instead, we'll take advantage of the [`broom` package](https://broom.tidymodels.org/index.html) to view the coefficients. The code chunk below demonstrates how to use the `broom` package to `tidy` up the output so that one row of the `rosenbaum_coef` table corresponds to a single player coefficient with information you would observe from the `summary()` output such as the coefficient estimate (`estimate`), standard error (`std.error`), $t$-statistic (`statistic`), $p$-value (`p.value`):
+
+```{r}
+#| label: tidy-apm-coef
+#| eval: false
+library(broom)
+rosenbaum_coef <- tidy(rosenbaum_model)
+rosenbaum_coef
+```
+
+In this current form, we have no idea which player is which since the `term` column contains the unique ID for each player. However, we can take advantage of the previously loaded `nba_player_table` (which has the same number of rows as `rosenbaum_coef`) to join over the player names to the `rosenbaum_coef` table. 
+
+We first need to modify the `term` column by removing the back-tick symbols and then convert the IDs to numeric values before joining over the player names. The code chunk below performs these steps, using the `left_join()` function by matching the two tables on the `term` and `player_id` columns:
+
+```{r}
+#| label: join-player-names
+#| eval: false
+rosenbaum_coef <- rosenbaum_coef |>
+  # First convert the term column to numeric:
+  mutate(term = as.numeric(str_remove_all(term, "`"))) |>
+  # Now join the player names:
+  left_join(nba_player_table, by = c("term" = "player_id"))
+rosenbaum_coef
+```
+
+Now with the player names joined, let's examine which players are the top 10 and bottom 10 in terms of their reported APM coefficients. You could easily view the top 10 players with the `slice_max()` function as demonstrated in the code chunk below:
+
+```{r}
+#| label: apm-top-10
+#| eval: false
+rosenbaum_coef |>
+  slice_max(estimate, n = 10)
+```
+
+And similarly use `slice_min()` to display the bottom 10:
+
+```{r}
+#| label: apm-bot-10
+#| eval: false
+rosenbaum_coef |>
+  slice_min(estimate, n = 10)
+```
+
+These look like pretty extreme values, with the most extreme values observed by players that have limited playing time (upon searching their stats online). Before we think about how to address these issues, let's look at what happens if we make a slight tweak to our model by using the `margin` variable as the response instead which is defined as:
+
+> `margin` = (`home_points` - `away_points`) / `n_pos` * 100
+
+This response is often preferred in the basketball analytics community, as it places the response on a scale of points per 100 possessions (which is comparable to the number of possessions in each basketball game).
+
+::: callout-important
+## Active Exercise
+
+**QUESTION:** 
+
+Repeat the steps from above, but fit a new regression model using the `margin` variable in the original data `nba_rapm_data` as the response instead of `score_diff`. Do NOT include any weights since the number of possessions is already accounted for in `margin`. Report the top 10 players based on this new APM model with `margin`. How do the rankings and estimates compare to the Rosenbaum APM model from above?
+
+**ANSWER:**
+
+```{r}
+#| label: margin-apm-results
+# INSERT CODE HERE
+```
+
+**INSERT YOUR ANSWER HERE**
+
+:::
+
+::: callout-important
+## Active Exercise
+
+**QUESTION:** Using the results of your `margin`-based model. Create a visualization displaying the distribution of the player coefficients. Describe what you observe about this distribution.
+
+**ANSWER:**
+
+```{r}
+#| label: apm-coef-distr
+# INSERT CODE HERE
+```
+
+**INSERT YOUR ANSWER HERE**
+
+:::
+
+
+::: callout-important
+## Thought Exercise
+
+**QUESTION:** What do you think are potential issues and concerns with the APM model?
+
+**ANSWER:** 
+
+**INSERT YOUR ANSWER HERE**
+
+:::
+
+
+### Regularized Adjusted Plus-Minus (RAPM)
+
+Next, we'll address some of the common issues facing APM models using __Regularized Adjusted Plus-Minus (RAPM)__. The first public instance of RAPM for basketball was by [Joe Sill (2010) in an award winning research paper](https://www.sloansportsconference.com/research-papers/improved-nba-adjusted-using-regularization-and-out-of-sample-testing) at a sports analytics conference. This version of RAPM relies on __ridge regression__ to apply a penalty term for shrinking player coefficients. More specifically, we can update the previous formula for estimating player coefficients as follows:
+
+$$
+\hat{\boldsymbol{\beta}}^{ridge} = \underset{\boldsymbol{\beta} \in \mathbb{R}^p}{\text{arg min}} \sum_{t = 1}^T (y_t - X_t \boldsymbol{\beta})^2 + \lambda \sum_{j = 1}^p \beta_p^2
+$$
+
+This objective for the ridge regression coefficients is effectively the combination of the __loss__ (the traditional least squares objective) and newly included __penalty term__ (the sum of the squared coefficient values). The ridge regression coefficients are solved for while balancing these two terms simultaneously, with the amount __penalization__ controlled by $\lambda$. We can consider $\lambda$ to be a __tuning parameter__ that controls the strength of the penalty term, and we will want to choose the $\lambda$ based on out-of-sample performance.
+
+::: callout-important
+## Thought Exercise
+
+**QUESTION:** What happens to the coefficients if $\lambda = 0$? What happens to the coefficients as $\lambda \rightarrow + \infty$?
+
+**ANSWER:** 
+
+**INSERT YOUR ANSWER HERE**
+
+:::
+
+::: {.callout-tip collapse="true"}
+## Challenging Exercise
+
+**QUESTION:** Ignoring the context of RAPM models, suppose you regress a response variable $Y$ on two variables $X_1$ and $X_2$ where $X_1 = X_2$. What is the solution to ridge regression in this case? Do you think this behavior is ideal in the context of estimating player effects in the presence of collinearity?
+
+**ANSWER:** 
+
+**INSERT YOUR ANSWER HERE**
+
+:::
+
+We'll now walk through how to fit a RAPM model using ridge regression. The most popular implementation of fitting ridge regression (and other common penalized regression models) in `R` is with the [`glmnet` package](https://glmnet.stanford.edu/articles/glmnet.html). 
+
+First, grab only the player columns (i.e. the indicator variables in the original data), then convert to a matrix using `as.matrix()`, and store this as a new object named `player_matrix`.
+
+```{r}
+# player_matrix <- INSERT CODE HERE
+```
+
+Next, the code chunk below performs 10 fold cross-validation to fit a ridge regression model using `glmnet`. The function `cv.glmnet` is used to perform the 10 fold cross-validation, evaluating the out-of-sample performance for a grid of $\lambda$ values. Fill in the missing code below using the above `player_matrix` as the predictors with the `margin` variable as the response: 
+
+```{r}
+#| label: fit-ridge
+#| eval: false
+library(glmnet)
+# View help for function with:
+# help(cv.glmnet)
+
+# ridge with 10 fold cv, no intercept and no standardization
+fit_ridge_cv <- cv.glmnet(x = INSERT DESIGN MATRIX,
+                          y = INSERT RESPONSE VARIABLE,
+                          alpha = 0,
+                          intercept = FALSE,
+                          standardize = FALSE)
+```
+
+The following plot prints out the penalty selection for this model, with the choices for $\lambda$ displayed along the x-axis and the 10 fold cross-validation mean squared error displayed along the y-axis. The red points denote the average error across the 10 folds, with gray standard error intervals.
+
+```{r}
+#| eval: false
+plot(fit_ridge_cv)
+```
+
+The first vertical dashed line corresponds to the choice of $\lambda$ with the smallest average error across the 10 folds. The far right dashed line indicates the largest $\lambda$ that is within one standard error of the minimum error $\lambda$. Using this $\lambda$ value is often referred to as the "one-standard error rule" as it implies picking a more "conservative" model with more penalized coefficients. In this case, we will prefer to choose the minimum error $\lambda$ indicated with the first vertical dashed line.
+
+::: callout-important
+## Thought Exercise
+
+**QUESTION:** What do you think the implication is that all of the red points are within the gray standard error intervals for all possible $\lambda$ values?
+
+**ANSWER:** 
+
+**INSERT YOUR ANSWER HERE**
+
+:::
+
+We can easily plot the path of the ridge regression shrinkage, to see how the coefficients are pulled towards 0 as the penalty increases. The following code chunk shows this full path:
+
+```{r}
+#| eval: false
+plot(fit_ridge_cv$glmnet.fit, xvar = "lambda")
+```
+
+
+Similar to the APM model analyis, we can again use the the `broom` package to make a tidy table of the coefficients for each player:
+
+```{r}
+#| eval: false
+tidy_ridge_coef <- tidy(fit_ridge_cv$glmnet.fit)
+tidy_ridge_coef
+```
+
+If you look closely, this returns 100 rows for each player in the data - because it is returning the coefficient for each player at each value of the `lambda` penalty. 
+We can filter to the values for the optimal choice of `lambda` based on the cross-validation results, and then join our player names as before:
+
+```{r}
+#| eval: false
+rapm_ridge_coef <- tidy_ridge_coef |>
+  filter(lambda == fit_ridge_cv$lambda.min) |>
+  # Convert term to numeric:
+  mutate(term = as.numeric(term)) |>
+  # Now join the player names:
+  left_join(nba_player_table, by = c("term" = "player_id"))
+```
+
+::: callout-important
+## Active Exercise
+
+**QUESTION:**
+
+Now, display the top 10 players based on coefficient estimates. What do you think of list in comparison to the APM results. Does this list pass the "eye test"? (Search who won the NBA MVP in 2023.)
+
+**ANSWER:**
+
+```{r}
+#| label: ridge-top-10
+# INSERT CODE HERE
+```
+
+**INSERT YOUR ANSWER HERE**
+:::
+
+::: callout-important
+## Active Exercise
+
+**QUESTION:** Similar to before, create a visualization displaying the distribution of the player coefficients from this ridge regression RAPM. Describe what you observe about this distribution and how it compares to the APM coefficient distribution.
+
+**ANSWER:**
+
+```{r}
+# INSERT CODE HERE
+```
+
+**INSERT YOUR ANSWER HERE**
+
+:::
+
+## Discussion
+
+You have now learned the basics behind RAPM models in the context of studying NBA player effects. We demonstrated how RAPM improves upon the simpler APM model, but there are still further questions and extensions to explore:
+
+* __Evaluating and tuning RAPM models__: We only considered tuning the $\lambda$ penalty via the default cross-validation in `glmnet` that relies on the observation-level response variable which in this case was the `margin` during an individual shift. However, the ultimate goal of the RAPM player coefficients could be for predicting game outcomes between two teams. One could tune the choice of $\lambda$ based on predicting the game outcomes as a difference between the sum of the home and away team ratings.
+
+* __Alternative choices for design matrix__: There is flexibility in the design matrix for RAPM models. We only considered the home/away version of the matrix in this module, but we could specify an alternative set-up so that offense and defense effects are estimated separately. This type of approach would split the shifts into possessions where one team is on offense and the other is on defense. Each player has two columns - one indicator column if they were on offense during the possession and another indicator if there were on defense. This provides two measures of player performance but can be more difficult to fit appropriately since this is doubling the dimensionality of the problem.
+
+* __Prior information__: This module only considered estimating player performance based on the observed appearances in games. But what if we have prior knowledge to tease apart players who often appear on the court together? We could account for priors via a Bayesian version of the RAPM model. Details of this type of approach will be left to be covered in a future module!
+
+
+
+
+

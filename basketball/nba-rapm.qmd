@@ -1,0 +1,54 @@
+---
+title: "Introduction to regularized adjusted plus-minus (RAPM)"
+description: |
+  An introduction to ridge regression in the context of estimating basketball player effects.
+author:
+  - name: Ron Yurko
+  - name: Quang Nguyen
+date: July 16, 2024
+categories:
+  - ridge regression
+  - penalized regression
+  - regularization
+  - linear regression
+  - adjusted plus-minus
+---
+
+## Motivation
+
+Measuring a player's effect on game outcomes is one of the most fundamental tasks in sports analytics. But this is not a simple thing to do, and varies greatly between sports! In the National Basketball Association (NBA), traditional box-score statistics provide a limited view of a player’s performance. In order to measure an individual player’s contribution, it is necessary to adjust for the presence of their teammates and opposition. Different versions of __regularized adjusted plus-minus (RAPM)__ models are popular approaches in the basketball analytics community for attempting to address this challenge. In this module, you will build a RAPM model in `R` for NBA players in an attempt to estimate an individual player’s effect when on the court.
+
+## Learning Objectives
+
+By the end of this module, you will be able to:
+
+1. Fit, interpret, and understand the limitations of adjusted plus-minus models.
+2. Understand the role of penalization in ridge regression.
+3. Become familiar with basics of implementing ridge regression in `R` with `glmnet`.
+4. Fit, interpret, and evaluate players using regularized adjusted plus-minus models.
+
+## Data
+
+The dataset and description are available at the [SCORE Network Data Repository](https://data.scorenetwork.org/basketball/nba-rapm-data.html).
+
+## Module Materials
+
+::: {.callout-warning}
+## Prerequisites
+
+Prior to working on through this module, students are expected to know the following:
+
+* Familiar with `R` and basic [`tidyverse` data wrangling functions](https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf).
+* Exposure to linear regression.
+* Familiar with cross-validation.
+
+The module has sections indicating which portions are challenging exercises, and is designed to take an undergraduate student roughly 3-4 hours to complete.
+
+:::
+
+[Student assignment qmd file](../module_resources/nba-rapm/_intro_nba_rapm.qmd)
+
+[View instructor solutions](../module_resources/nba-rapm/intro_nba_rapm_SOLUTIONS.qmd)
+
+
+
