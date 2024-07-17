@@ -3,8 +3,10 @@
     "listing": "/by-statsds-topic.html",
     "items": [
       "/baseball/verlander-pitchtype.html",
+      "/module_resources/nba-rapm/intro_nba_rapm_SOLUTIONS.html",
       "/football/nfl-elo-ratings.html",
-      "/module_resources/nfl-elo-ratings/intro_elo_ratings_SOLUTIONS.html"
+      "/module_resources/nfl-elo-ratings/intro_elo_ratings_SOLUTIONS.html",
+      "/basketball/nba-rapm.html"
     ]
   }
 ]

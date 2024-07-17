@@ -6,8 +6,12 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Ron Yurko">
+<meta name="author" content="Quang Nguyen">
+<meta name="dcterms.date" content="2024-07-16">
+<meta name="description" content="An introduction to ridge regression in the context of estimating basketball player effects.">
 
-<title>CMU SCORE Module Preprint Repository</title>
+<title>Introduction to regularized adjusted plus-minus (RAPM) – CMU SCORE Module Preprint Repository</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,24 +27,24 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/cookie-consent/cookie-consent.js"></script>
-<link href="site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -97,7 +101,7 @@ cookieconsent.run({
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">CMU SCORE Module Preprint Repository</span>
     </a>
   </div>
@@ -108,11 +112,11 @@ cookieconsent.run({
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./by-statsds-topic.html"> 
+    <a class="nav-link active" href="../by-statsds-topic.html" aria-current="page"> 
 <span class="menu-text">Modules By Topic</span></a>
   </li>  
   <li class="nav-item">
@@ -142,7 +146,7 @@ cookieconsent.run({
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">CMU SCORE Module Preprint Repository</li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../basketball/nba-rapm.html">Basketball</a></li><li class="breadcrumb-item"><a href="../basketball/nba-rapm.html">Introduction to regularized adjusted plus-minus (RAPM)</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -156,7 +160,7 @@ cookieconsent.run({
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./by-statsds-topic.html" class="sidebar-item-text sidebar-link">
+  <a href="../by-statsds-topic.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Modules By Topic</span></a>
   </div>
 </li>
@@ -171,7 +175,7 @@ cookieconsent.run({
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./baseball/verlander-pitchtype.html" class="sidebar-item-text sidebar-link">
+  <a href="../baseball/verlander-pitchtype.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exploring Justin Verlander’s pitch type by count</span></a>
   </div>
 </li>
@@ -179,16 +183,16 @@ cookieconsent.run({
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
  <span class="menu-text">Basketball</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./basketball/nba-rapm.html" class="sidebar-item-text sidebar-link">
+  <a href="../basketball/nba-rapm.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Introduction to regularized adjusted plus-minus (RAPM)</span></a>
   </div>
 </li>
@@ -205,7 +209,7 @@ cookieconsent.run({
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./football/nfl-elo-ratings.html" class="sidebar-item-text sidebar-link">
+  <a href="../football/nfl-elo-ratings.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Introduction to Elo ratings</span></a>
   </div>
 </li>
@@ -231,7 +235,7 @@ cookieconsent.run({
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./module_resources/nba-rapm/intro_nba_rapm_SOLUTIONS.html" class="sidebar-item-text sidebar-link">
+  <a href="../module_resources/nba-rapm/intro_nba_rapm_SOLUTIONS.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">INSTRUCTOR SOLUTIONS: Introduction to regularized adjusted plus-minus (RAPM)</span></a>
   </div>
 </li>
@@ -248,7 +252,7 @@ cookieconsent.run({
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./module_resources/nfl-elo-ratings/intro_elo_ratings_SOLUTIONS.html" class="sidebar-item-text sidebar-link">
+  <a href="../module_resources/nfl-elo-ratings/intro_elo_ratings_SOLUTIONS.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Introduction to Elo ratings (INSTRUCTOR SOLUTIONS)</span></a>
   </div>
 </li>
@@ -261,22 +265,56 @@ cookieconsent.run({
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#motivation" id="toc-motivation" class="nav-link active" data-scroll-target="#motivation">Motivation</a></li>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link" data-scroll-target="#learning-objectives">Learning Objectives</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  <li><a href="#module-materials" id="toc-module-materials" class="nav-link" data-scroll-target="#module-materials">Module Materials</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ryurko/cmu_score_preprints/edit/main/basketball/nba-rapm.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/ryurko/cmu_score_preprints/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../basketball/nba-rapm.html">Basketball</a></li><li class="breadcrumb-item"><a href="../basketball/nba-rapm.html">Introduction to regularized adjusted plus-minus (RAPM)</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">CMU SCORE Module Preprint Repository</h1>
-</div>
+<h1 class="title">Introduction to regularized adjusted plus-minus (RAPM)</h1>
+  <div class="quarto-categories">
+    <div class="quarto-category">ridge regression</div>
+    <div class="quarto-category">penalized regression</div>
+    <div class="quarto-category">regularization</div>
+    <div class="quarto-category">linear regression</div>
+    <div class="quarto-category">adjusted plus-minus</div>
+  </div>
+  </div>
 
+<div>
+  <div class="description">
+    <p>An introduction to ridge regression in the context of estimating basketball player effects.</p>
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Authors</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ron Yurko </p>
+             <p>Quang Nguyen </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 16, 2024</p>
+    </div>
+  </div>
   
     
   </div>
@@ -286,12 +324,50 @@ cookieconsent.run({
 </header>
 
 
-<p>This page contains module materials for the <a href="https://scorenetwork.org/index.html">SCORE Network</a> that were created by faculty and students from the <a href="https://www.cmu.edu/dietrich/statistics-datascience/index.html">Department of Statistics &amp; Data Science at Carnegie Mellon University</a>.</p>
-<p>This preprint repository enables you to search for modules by either sport (along the left), or you can browse <a href="./by-statsds-topic.html">by statistics and data science topic</a>.</p>
-<p>Please note that these material have not yet completed the required pedagogical and industry peer reviews to become a <a href="https://modules.scorenetwork.org/">published module on the SCORE Network</a>. However, instructors are still welcome to use these materials if they are so inclined.</p>
-<p><em>The development of the SCORE with Data network is funded by the National Science Foundation (award 2142705).</em></p>
+<section id="motivation" class="level2">
+<h2 class="anchored" data-anchor-id="motivation">Motivation</h2>
+<p>Measuring a player’s effect on game outcomes is one of the most fundamental tasks in sports analytics. But this is not a simple thing to do, and varies greatly between sports! In the National Basketball Association (NBA), traditional box-score statistics provide a limited view of a player’s performance. In order to measure an individual player’s contribution, it is necessary to adjust for the presence of their teammates and opposition. Different versions of <strong>regularized adjusted plus-minus (RAPM)</strong> models are popular approaches in the basketball analytics community for attempting to address this challenge. In this module, you will build a RAPM model in <code>R</code> for NBA players in an attempt to estimate an individual player’s effect when on the court.</p>
+</section>
+<section id="learning-objectives" class="level2">
+<h2 class="anchored" data-anchor-id="learning-objectives">Learning Objectives</h2>
+<p>By the end of this module, you will be able to:</p>
+<ol type="1">
+<li>Fit, interpret, and understand the limitations of adjusted plus-minus models.</li>
+<li>Understand the role of penalization in ridge regression.</li>
+<li>Become familiar with basics of implementing ridge regression in <code>R</code> with <code>glmnet</code>.</li>
+<li>Fit, interpret, and evaluate players using regularized adjusted plus-minus models.</li>
+</ol>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<p>The dataset and description are available at the <a href="https://data.scorenetwork.org/basketball/nba-rapm-data.html">SCORE Network Data Repository</a>.</p>
+</section>
+<section id="module-materials" class="level2">
+<h2 class="anchored" data-anchor-id="module-materials">Module Materials</h2>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Prerequisites
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Prior to working on through this module, students are expected to know the following:</p>
+<ul>
+<li>Familiar with <code>R</code> and basic <a href="https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf"><code>tidyverse</code> data wrangling functions</a>.</li>
+<li>Exposure to linear regression.</li>
+<li>Familiar with cross-validation.</li>
+</ul>
+<p>The module has sections indicating which portions are challenging exercises, and is designed to take an undergraduate student roughly 3-4 hours to complete.</p>
+</div>
+</div>
+<p><a href="../module_resources/nba-rapm/_intro_nba_rapm.qmd">Student assignment qmd file</a></p>
+<p><a href="../module_resources/nba-rapm/intro_nba_rapm_SOLUTIONS.html">View instructor solutions</a></p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -722,7 +798,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     </div>   
     <div class="nav-footer-center">
 <p>Maintained by <a href="https://www.stat.cmu.edu/~ryurko/">Ron Yurko</a></p>
-<div class="toc-actions"><ul><li><a href="https://github.com/ryurko/cmu_score_preprints/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/ryurko/cmu_score_preprints/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div><div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ryurko/cmu_score_preprints/edit/main/basketball/nba-rapm.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/ryurko/cmu_score_preprints/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div><div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>

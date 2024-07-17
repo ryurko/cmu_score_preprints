@@ -2,22 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://ryurko.github.io/cmu_score_preprints/index.html</loc>
-    <lastmod>2024-07-10T02:41:37.721Z</lastmod>
+    <lastmod>2024-07-17T00:22:32.784Z</lastmod>
   </url>
   <url>
     <loc>https://ryurko.github.io/cmu_score_preprints/baseball/verlander-pitchtype.html</loc>
-    <lastmod>2024-07-10T02:41:37.721Z</lastmod>
-  </url>
-  <url>
-    <loc>https://ryurko.github.io/cmu_score_preprints/by-statsds-topic.html</loc>
-    <lastmod>2024-07-10T02:41:37.721Z</lastmod>
+    <lastmod>2024-07-17T00:22:32.780Z</lastmod>
   </url>
   <url>
     <loc>https://ryurko.github.io/cmu_score_preprints/module_resources/nfl-elo-ratings/intro_elo_ratings_SOLUTIONS.html</loc>
-    <lastmod>2024-07-10T02:41:37.721Z</lastmod>
+    <lastmod>2024-07-17T00:22:32.784Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ryurko.github.io/cmu_score_preprints/by-statsds-topic.html</loc>
+    <lastmod>2024-07-17T00:22:32.784Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ryurko.github.io/cmu_score_preprints/basketball/nba-rapm.html</loc>
+    <lastmod>2024-07-17T00:22:32.784Z</lastmod>
+  </url>
+  <url>
+    <loc>https://ryurko.github.io/cmu_score_preprints/module_resources/nba-rapm/intro_nba_rapm_SOLUTIONS.html</loc>
+    <lastmod>2024-07-17T00:22:32.784Z</lastmod>
   </url>
   <url>
     <loc>https://ryurko.github.io/cmu_score_preprints/football/nfl-elo-ratings.html</loc>
-    <lastmod>2024-07-10T02:41:37.721Z</lastmod>
+    <lastmod>2024-07-17T00:22:32.784Z</lastmod>
   </url>
 </urlset>

@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.54">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ron Yurko">
+<meta name="author" content="Quang Nguyen">
+<meta name="description" content="An introduction to ridge regression in the context of estimating basketball player effects.">
+
+<title>INSTRUCTOR SOLUTIONS: Introduction to regularized adjusted plus-minus (RAPM) – CMU SCORE Module Preprint Repository</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/cookie-consent/cookie-consent.js"></script>
+<link href="../../site_libs/cookie-consent/cookie-consent.css" rel="stylesheet">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+<script type="text/javascript" charset="UTF-8">
+document.addEventListener('DOMContentLoaded', function () {
+cookieconsent.run({
+  "notice_banner_type":"simple",
+  "consent_type":"implied",
+  "palette":"light",
+  "language":"en",
+  "page_load_consent_levels":["strictly-necessary","functionality","tracking","targeting"],
+  "notice_banner_reject_button_hide":false,
+  "preferences_center_close_button_hide":false,
+  "website_name":""
+  ,
+"language":"en"
+  });
+});
+</script> 
+  
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">CMU SCORE Module Preprint Repository</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../../by-statsds-topic.html" aria-current="page"> 
+<span class="menu-text">Modules By Topic</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://data.scorenetwork.org/"> 
+<span class="menu-text">Data Repository</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/scorenetworkorg"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://www.linkedin.com/company/scorenetworkorg/"> <i class="bi bi-linkedin" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Module Resources</li><li class="breadcrumb-item"><a href="../../module_resources/nba-rapm/intro_nba_rapm_SOLUTIONS.html">Nba Rapm</a></li><li class="breadcrumb-item"><a href="../../module_resources/nba-rapm/intro_nba_rapm_SOLUTIONS.html">INSTRUCTOR SOLUTIONS: Introduction to regularized adjusted plus-minus (RAPM)</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../by-statsds-topic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Modules By Topic</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+ <span class="menu-text">Baseball</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../baseball/verlander-pitchtype.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exploring Justin Verlander’s pitch type by count</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
+ <span class="menu-text">Basketball</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../basketball/nba-rapm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction to regularized adjusted plus-minus (RAPM)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
+ <span class="menu-text">Football</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../football/nfl-elo-ratings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction to Elo ratings</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Module Resources</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Nba Rapm</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../module_resources/nba-rapm/intro_nba_rapm_SOLUTIONS.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">INSTRUCTOR SOLUTIONS: Introduction to regularized adjusted plus-minus (RAPM)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
+ <span class="menu-text">Nfl Elo Ratings</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../module_resources/nfl-elo-ratings/intro_elo_ratings_SOLUTIONS.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Introduction to Elo ratings (INSTRUCTOR SOLUTIONS)</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#intro-and-data" id="toc-intro-and-data" class="nav-link active" data-scroll-target="#intro-and-data">Intro and Data</a></li>
+  <li><a href="#background-information" id="toc-background-information" class="nav-link" data-scroll-target="#background-information">Background Information</a></li>
+  <li><a href="#learn-by-doing" id="toc-learn-by-doing" class="nav-link" data-scroll-target="#learn-by-doing">Learn By Doing</a>
+  <ul class="collapse">
+  <li><a href="#adjusted-plus-minus-apm" id="toc-adjusted-plus-minus-apm" class="nav-link" data-scroll-target="#adjusted-plus-minus-apm">Adjusted Plus-Minus (APM)</a></li>
+  <li><a href="#regularized-adjusted-plus-minus-rapm" id="toc-regularized-adjusted-plus-minus-rapm" class="nav-link" data-scroll-target="#regularized-adjusted-plus-minus-rapm">Regularized Adjusted Plus-Minus (RAPM)</a></li>
+  </ul></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/ryurko/cmu_score_preprints/edit/main/module_resources/nba-rapm/intro_nba_rapm_SOLUTIONS.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/ryurko/cmu_score_preprints/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Module Resources</li><li class="breadcrumb-item"><a href="../../module_resources/nba-rapm/intro_nba_rapm_SOLUTIONS.html">Nba Rapm</a></li><li class="breadcrumb-item"><a href="../../module_resources/nba-rapm/intro_nba_rapm_SOLUTIONS.html">INSTRUCTOR SOLUTIONS: Introduction to regularized adjusted plus-minus (RAPM)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">INSTRUCTOR SOLUTIONS: Introduction to regularized adjusted plus-minus (RAPM)</h1>
+</div>
+
+<div>
+  <div class="description">
+    <p>An introduction to ridge regression in the context of estimating basketball player effects.</p>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Authors</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ron Yurko </p>
+             <p>Quang Nguyen </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="intro-and-data" class="level2">
+<h2 class="anchored" data-anchor-id="intro-and-data">Intro and Data</h2>
+<p>The purpose of this module is to walk through the basics of building a <strong>regularized adjusted plus-minus (RAPM) model</strong> to estimate the impact of basketball players when they are on the court, while adjusting for the quality of their teammates and opponents.</p>
+<p>We’ll use <a href="https://data.scorenetwork.org/basketball/nba-rapm-data.html">NBA data available on the SCORE Network Data repository</a>, that was already constructed for the purpose of building and comparing different approaches for estimating player effects. The data were gathered using the <a href="https://hoopr.sportsdataverse.org/"><code>hoopR</code> package</a>, you can find the script for initializing the data on <a href="https://github.com/SCOREnetworkorg/sports-data-repository/blob/main/_prep/nba-rapm/init-nba-rapm-data.R">GitHub</a>.</p>
+<p>The following code chunk reads in a dataset that is in a wide form (discussed in detail below) with indicator columns for every player that was observed during the 2022-23 regular season:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Need to have the tidyverse installed prior to starting!</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>nba_rapm_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://data.scorenetwork.org/data/nba_2223_season_rapm_data.csv.gz"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In this dataset, we have 32,358 unique shifts/stints with 539 players represented by the indicator variables (+1 if on court for home team, -1 if on court for away team, and 0 if not on court). Additional context is captured by the following variables:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 76%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>game_id</code></td>
+<td>Unique game ID</td>
+</tr>
+<tr class="even">
+<td><code>stint_id</code></td>
+<td>Unique identifier within a game for a stint for particular combination of home and away lineup (in appearance of order, where 1 is the first stint in the game)</td>
+</tr>
+<tr class="odd">
+<td><code>n_pos</code></td>
+<td>Number of possessions (combined for both home and away) during the observed stint</td>
+</tr>
+<tr class="even">
+<td><code>home_points</code></td>
+<td>Number of points scored by the home team during the stint</td>
+</tr>
+<tr class="odd">
+<td><code>away_points</code></td>
+<td>Number of points scored by the away team during the stint</td>
+</tr>
+<tr class="even">
+<td><code>minutes</code></td>
+<td>Length of the stint in terms of minutes played</td>
+</tr>
+<tr class="odd">
+<td><code>margin</code></td>
+<td>Common response for RAPM models defined as: (<code>home_points</code> - <code>away_points</code>) / <code>n_pos</code> * 100</td>
+</tr>
+</tbody>
+</table>
+<p>Since the above dataset does not include player names, only unique identifiers, we will also load in a table that includes player names to join over with the eventual results of the analysis. You can use the code chunk below to read in this table from the <a href="https://data.scorenetwork.org/basketball/nba-rapm-data.html">SCORE Network Data repository</a>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>nba_player_table <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://data.scorenetwork.org/data/nba_2223_player_table.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 539 Columns: 2
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (1): player_name
+dbl (1): player_id
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>nba_player_table</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 539 × 2
+   player_id player_name             
+       &lt;dbl&gt; &lt;chr&gt;                   
+ 1   1630173 Precious Achiuwa        
+ 2    203500 Steven Adams            
+ 3   1628389 Bam Adebayo             
+ 4   1630534 Ochai Agbaji            
+ 5   1630583 Santi Aldama            
+ 6   1629638 Nickeil Alexander-Walker
+ 7   1628960 Grayson Allen           
+ 8   1628386 Jarrett Allen           
+ 9   1630631 Jose Alvarado           
+10    203937 Kyle Anderson           
+# ℹ 529 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="background-information" class="level2">
+<h2 class="anchored" data-anchor-id="background-information">Background Information</h2>
+<p>Measuring a player’s effect on game outcomes is one of the most fundamental tasks in sports analytics. But this is not a simple thing to do, and varies greatly between sports! In sports like basketball and hockey, a popular starting point for measuring a player’s impact is <a href="https://en.wikipedia.org/wiki/Plus%E2%80%93minus_(sports)"><strong>Plus-Minus</strong></a> which is defind as:</p>
+<blockquote class="blockquote">
+<p>Plus-Minus = points scored by team when player is on court - points scored by opposing team when player is on court</p>
+</blockquote>
+<p>You can find leaderboards for this statistic on the <a href="https://www.nba.com/stats/players/traditional?PerMode=Totals&amp;dir=D&amp;sort=PLUS_MINUS">NBA stats website</a>.</p>
+<div class="callout callout-style-default callout-important no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Thought Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>QUESTION:</strong> What do you think are potential limitations with the above Plus-Minus statistic?</p>
+<p><strong>ANSWER:</strong> The naive version of Plus-Minus ignores the influence of a player’s teammates and the opponents they faced during their time on the court. If a “bad” player shares court with a “good” player, they may have a strong positive Plus-Minus since their “good” teammate can offset the “bad” player (and vice versa). Likewise, if a “good” player has a more difficult schedule against stronger opponents then it can potentially hurt their Plus-Minus (with the opposite true against an easier schedule of weaker opponents).</p>
+</div>
+</div>
+<p>We’ll now walk through how to improve on Plus-Minus with regression-based approaches using the NBA data loaded in the beginning of the module.</p>
+</section>
+<section id="learn-by-doing" class="level2">
+<h2 class="anchored" data-anchor-id="learn-by-doing">Learn By Doing</h2>
+<section id="adjusted-plus-minus-apm" class="level3">
+<h3 class="anchored" data-anchor-id="adjusted-plus-minus-apm">Adjusted Plus-Minus (APM)</h3>
+<p>Introduced by <a href="https://www.82games.com/comm30.htm">Rosenbaum (2004)</a>, <strong>adjusted Plus-Minus (APM)</strong> is a regression-based approach to estimate a player’s impact on game outcomes while accounting for their teammates and opponents. How does this work? APM is a regression model where the predictors are <strong>indicator variable for every player</strong> denoting if they are on the court. The response variable is some type of outcome observed as the possession or shift-level (explained below). To be more explicit:</p>
+<ul>
+<li><p>There are 10 players on the court at a time during a basketball game, 5 on side and 5 on the other.</p></li>
+<li><p>A basketball game has <span class="math inline">\(T\)</span> <em>shifts</em> (or <em>stints</em>) that are periods of time without substitutions (i.e., there are no changes to who are playing on the court).</p></li>
+<li><p>We will consider each 10-person shift <span class="math inline">\(t = 1,\dots,T\)</span> to be a single observation.</p></li>
+<li><p>The <strong>reponse variable</strong> is some type of game outcome measure, such as the score differential during shift <span class="math inline">\(t\)</span> from the view of the home team (i.e., home team score - away team score).</p></li>
+<li><p>The <strong>predictor variables</strong> represented in the <span class="math inline">\(T \times p\)</span> design matrix <span class="math inline">\(X\)</span> are columns for each of the <span class="math inline">\(p\)</span> players in the league, such that:</p>
+<ul>
+<li><span class="math inline">\(X_{tj} = 1\)</span> if player <span class="math inline">\(j\)</span> is on the court for the home team during shift <span class="math inline">\(t\)</span></li>
+<li><span class="math inline">\(X_{tj} = -1\)</span> if player <span class="math inline">\(j\)</span> is on the court for the away team during shift <span class="math inline">\(t\)</span></li>
+<li><span class="math inline">\(X_{tj} = 0\)</span> if player <span class="math inline">\(j\)</span> is not on the court during shift <span class="math inline">\(t\)</span></li>
+</ul></li>
+</ul>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>There are a number of different ways to set-up the APM design matrix <span class="math inline">\(X\)</span>, but we will only consider this design based on home and away team status in this module.</p>
+</div>
+</div>
+<p>As discussed at the beginning of this module, the <code>nba_rapm_data</code> you loaded contains these player indicator variables. The code chunk below prints the first so many rows of this dataset:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>nba_rapm_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 32,358 × 546
+   game_id    stint_id n_pos home_points away_points minutes margin `201939`
+   &lt;chr&gt;         &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
+ 1 0022200002        1    14           5           2   2.7     21.4        1
+ 2 0022200002        2     9           6           2   1.67    44.4        1
+ 3 0022200002        3     5           0           3   0.480  -60          1
+ 4 0022200002        4     5           5           1   0.78    80          1
+ 5 0022200002        5     9           3           6   1.52   -33.3        1
+ 6 0022200002        6     8           0           6   1.45   -75          1
+ 7 0022200002        7     5           0           0   0.800    0          0
+ 8 0022200002        8     5           1           0   0.9     20          0
+ 9 0022200002        9     3           2           0   0.97    66.7        0
+10 0022200002       10     7           2           2   1.66     0          1
+# ℹ 32,348 more rows
+# ℹ 538 more variables: `202691` &lt;dbl&gt;, `203110` &lt;dbl&gt;, `203952` &lt;dbl&gt;,
+#   `1626172` &lt;dbl&gt;, `1629673` &lt;dbl&gt;, `203210` &lt;dbl&gt;, `1630164` &lt;dbl&gt;,
+#   `1630228` &lt;dbl&gt;, `1628978` &lt;dbl&gt;, `1630541` &lt;dbl&gt;, `1631157` &lt;dbl&gt;,
+#   `201143` &lt;dbl&gt;, `203935` &lt;dbl&gt;, `1627759` &lt;dbl&gt;, `1628369` &lt;dbl&gt;,
+#   `1628401` &lt;dbl&gt;, `203943` &lt;dbl&gt;, `1629684` &lt;dbl&gt;, `1627763` &lt;dbl&gt;,
+#   `201933` &lt;dbl&gt;, `1630573` &lt;dbl&gt;, `101108` &lt;dbl&gt;, `1626164` &lt;dbl&gt;, …</code></pre>
+</div>
+</div>
+<p>The <a href="https://www.82games.com/comm30.htm">Rosenbaum (2004)</a> implementation of APM relies on <strong>weighted least squares</strong>, where you solve for the <span class="math inline">\(p\)</span>-dimensional vector of player coefficients <span class="math inline">\(\boldsymbol{\beta}\)</span> using a modified version of the traditional least squares model:</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\beta}} = \underset{\boldsymbol{\beta} \in \mathbb{R}^p}{\text{arg min}} \sum_{t = 1}^T n_t (y_t - X_t \boldsymbol{\beta})^2
+\]</span> * <span class="math inline">\(y_t\)</span> is the response variable during shift <span class="math inline">\(t\)</span>, * <span class="math inline">\(X_t\)</span> is the row of the design matrix for shift <span class="math inline">\(t\)</span>, and * <span class="math inline">\(n_t\)</span> is the number possessions during shift <span class="math inline">\(t\)</span>.</p>
+<div class="callout callout-style-default callout-important no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Thought Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>QUESTION:</strong> What do you think is the motivation behind using <em>weighted</em> least squares rather than ordinary least squares without weights? Think about the choice of using the number of possessions as the weights.</p>
+<p><strong>ANSWER:</strong> Since a shift of time can vary in length, the idea behind using the number of possessions as weights is to place more importance on observations that effectively capture more periods of game play. Observed shifts with more possessions should be more informative about player performance than shifts with fewer possessions.</p>
+</div>
+</div>
+<p>We’ll now work through fitting and intepreting the APM model in the context of NBA 2022-23 regular season data.</p>
+<p>First, compute the score differential as <code>score_diff = home_points - away_points</code> using <code>mutate()</code>. Append this new column to the <code>nba_rapm_data</code> dataset.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>nba_rapm_data <span class="ot">&lt;-</span> nba_rapm_data <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">score_diff =</span> home_points <span class="sc">-</span> away_points)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, create a new dataset named <code>nba_apm_model_data</code> that contains only the response <code>score_diff</code> and the player columns:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>nba_apm_model_data <span class="ot">&lt;-</span> nba_rapm_data <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(game_id, stint_id, n_pos, home_points, away_points, minutes,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                   margin))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, fit the model using the code below:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>rosenbaum_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(score_diff <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> ., <span class="at">data =</span> nba_apm_model_data,</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                      <span class="at">weights =</span> nba_rapm_data<span class="sc">$</span>n_pos)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Compared to fitting a linear regression model in <code>R</code> using the <code>lm()</code> with a small number of predictors, this model has the following aspects:</p>
+<ul>
+<li><p>The intercept term is not included by specifying <code>0</code> at the beginning of the formula,</p></li>
+<li><p>Using <code>+ .</code> in the formula tells <code>lm()</code> to use every column in the data as predictors,</p></li>
+<li><p><code>weights = nba_rapm_data$n_pos</code> ensures that we are using weighted least squares with the <code>n_pos</code> column (number of possessions during the shift) as the weights.</p></li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-important no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Thought Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>QUESTION:</strong> Why is it appropriate to remove the intercept term in the above regression model?</p>
+<p><strong>ANSWER:</strong> We need to remove the intercept term in the APM because it is impossible for every column of <span class="math inline">\(X\)</span> to be 0, i.e., we will always observe 10 columns to have non-zero values in every single row of the dataset. This means the intercept term is nonsensical and should be removed from model fitting.</p>
+</div>
+</div>
+<p>We’re not going to view the summary of this model since it is a bit of a mess (there are many player variables!). Instead, we’ll take advantage of the <a href="https://broom.tidymodels.org/index.html"><code>broom</code> package</a> to view the coefficients. The code chunk below demonstrates how to use the <code>broom</code> package to <code>tidy</code> up the output so that one row of the <code>rosenbaum_coef</code> table corresponds to a single player coefficient with information you would observe from the <code>summary()</code> output such as the coefficient estimate (<code>estimate</code>), standard error (<code>std.error</code>), <span class="math inline">\(t\)</span>-statistic (<code>statistic</code>), <span class="math inline">\(p\)</span>-value (<code>p.value</code>):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>rosenbaum_coef <span class="ot">&lt;-</span> <span class="fu">tidy</span>(rosenbaum_model)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>rosenbaum_coef</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 539 × 5
+   term      estimate std.error statistic p.value
+   &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+ 1 `201939`   -0.303       1.58   -0.192    0.848
+ 2 `202691`   -1.01        1.58   -0.641    0.521
+ 3 `203110`    0.214       1.58    0.135    0.892
+ 4 `203952`    0.0336      1.58    0.0213   0.983
+ 5 `1626172`  -0.417       1.58   -0.265    0.791
+ 6 `1629673`  -1.36        1.57   -0.866    0.386
+ 7 `203210`   -0.971       1.58   -0.613    0.540
+ 8 `1630164`  -1.02        1.59   -0.640    0.522
+ 9 `1630228`  -0.663       1.58   -0.421    0.674
+10 `1628978`  -0.565       1.57   -0.359    0.720
+# ℹ 529 more rows</code></pre>
+</div>
+</div>
+<p>In this current form, we have no idea which player is which since the <code>term</code> column contains the unique ID for each player. However, we can take advantage of the previously loaded <code>nba_player_table</code> (which has the same number of rows as <code>rosenbaum_coef</code>) to join over the player names to the <code>rosenbaum_coef</code> table.</p>
+<p>We first need to modify the <code>term</code> column by removing the back-tick symbols and then convert the IDs to numeric values before joining over the player names. The code chunk below performs these steps, using the <code>left_join()</code> function by matching the two tables on the <code>term</code> and <code>player_id</code> columns:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>rosenbaum_coef <span class="ot">&lt;-</span> rosenbaum_coef <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># First convert the term column to numeric:</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">term =</span> <span class="fu">as.numeric</span>(<span class="fu">str_remove_all</span>(term, <span class="st">"`"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Now join the player names:</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(nba_player_table, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"term"</span> <span class="ot">=</span> <span class="st">"player_id"</span>))</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>rosenbaum_coef</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 539 × 6
+      term estimate std.error statistic p.value player_name     
+     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;           
+ 1  201939  -0.303       1.58   -0.192    0.848 Stephen Curry   
+ 2  202691  -1.01        1.58   -0.641    0.521 Klay Thompson   
+ 3  203110   0.214       1.58    0.135    0.892 Draymond Green  
+ 4  203952   0.0336      1.58    0.0213   0.983 Andrew Wiggins  
+ 5 1626172  -0.417       1.58   -0.265    0.791 Kevon Looney    
+ 6 1629673  -1.36        1.57   -0.866    0.386 Jordan Poole    
+ 7  203210  -0.971       1.58   -0.613    0.540 JaMychal Green  
+ 8 1630164  -1.02        1.59   -0.640    0.522 James Wiseman   
+ 9 1630228  -0.663       1.58   -0.421    0.674 Jonathan Kuminga
+10 1628978  -0.565       1.57   -0.359    0.720 Donte DiVincenzo
+# ℹ 529 more rows</code></pre>
+</div>
+</div>
+<p>Now with the player names joined, let’s examine which players are the top 10 and bottom 10 in terms of their reported APM coefficients. You could easily view the top 10 players with the <code>slice_max()</code> function as demonstrated in the code chunk below:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>rosenbaum_coef <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(estimate, <span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 6
+      term estimate std.error statistic p.value player_name     
+     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;           
+ 1 1629735     5.72      2.66     2.15   0.0314 Chris Silva     
+ 2 1631495     4.82      3.41     1.41   0.157  Donovan Williams
+ 3 1630648     4.04      3.26     1.24   0.215  Jordan Schakel  
+ 4 1629126     2.71      2.83     0.960  0.337  Deonte Burton   
+ 5 1630600     2.71      1.86     1.46   0.145  Isaiah Mobley   
+ 6 1629714     2.45      1.94     1.27   0.205  Jarrell Brantley
+ 7 1641645     2.03      1.82     1.11   0.265  Xavier Cooks    
+ 8 1630649     1.92      4.61     0.417  0.677  Stanley Umude   
+ 9 1630644     1.40      2.11     0.664  0.507  Mac McClung     
+10 1628371     1.33      1.65     0.810  0.418  Jonathan Isaac  </code></pre>
+</div>
+</div>
+<p>And similarly use <code>slice_min()</code> to display the bottom 10:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>rosenbaum_coef <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_min</span>(estimate, <span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 6
+      term estimate std.error statistic p.value player_name    
+     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;          
+ 1 1631211    -8.43      2.65     -3.19 0.00144 Trevor Keels   
+ 2 1630241    -5.95      1.91     -3.12 0.00181 Sam Merrill    
+ 3 1628435    -5.26      2.24     -2.35 0.0190  Chance Comanche
+ 4 1630225    -3.93      1.92     -2.04 0.0410  Isaiah Todd    
+ 5 1630206    -3.80      2.08     -1.83 0.0672  Jay Scrubb     
+ 6 1628382    -3.58      1.73     -2.07 0.0381  Justin Jackson 
+ 7 1631157    -3.29      1.75     -1.88 0.0607  Ryan Rollins   
+ 8 1631311    -3.02      2.31     -1.31 0.191   Lester Quinones
+ 9 1631320    -3.00      2.67     -1.12 0.261   Chima Moneke   
+10 1630643    -2.90      1.84     -1.58 0.115   Jay Huff       </code></pre>
+</div>
+</div>
+<p>These look like pretty extreme values, with the most extreme values observed by players that have limited playing time (upon searching their stats online). Before we think about how to address these issues, let’s look at what happens if we make a slight tweak to our model by using the <code>margin</code> variable as the response instead which is defined as:</p>
+<blockquote class="blockquote">
+<p><code>margin</code> = (<code>home_points</code> - <code>away_points</code>) / <code>n_pos</code> * 100</p>
+</blockquote>
+<p>This response is often preferred in the basketball analytics community, as it places the response on a scale of points per 100 possessions (which is comparable to the number of possessions in each basketball game).</p>
+<div class="callout callout-style-default callout-important no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Active Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>QUESTION:</strong></p>
+<p>Repeat the steps from above, but fit a new regression model using the <code>margin</code> variable in the original data <code>nba_rapm_data</code> as the response instead of <code>score_diff</code>. Do NOT include any weights since the number of possessions is already accounted for in <code>margin</code>. Report the top 10 players based on this new APM model with <code>margin</code>. How do the rankings and estimates compare to the Rosenbaum APM model from above?</p>
+<p><strong>ANSWER:</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Now for ease, create a dataset that only has the response and player columns:</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>nba_margin_apm_model_data <span class="ot">&lt;-</span> nba_rapm_data <span class="sc">|&gt;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(game_id, stint_id, n_pos, home_points, away_points, minutes,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                   score_diff))</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the model (notice we do not include an intercept term)</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>rosenbaum_margin_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(margin <span class="sc">~</span> <span class="dv">0</span> <span class="sc">+</span> ., <span class="at">data =</span> nba_margin_apm_model_data)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the coefficients and join player names:</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>rosenbaum_margin_coef <span class="ot">&lt;-</span> <span class="fu">tidy</span>(rosenbaum_margin_model) <span class="sc">|&gt;</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># First convert the term column to numeric:</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">term =</span> <span class="fu">as.numeric</span>(<span class="fu">str_remove_all</span>(term, <span class="st">"`"</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Now join the player names:</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(nba_player_table, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"term"</span> <span class="ot">=</span> <span class="st">"player_id"</span>))</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="co"># View top 10:</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>rosenbaum_margin_coef <span class="sc">|&gt;</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(estimate, <span class="at">n =</span> <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 6
+      term estimate std.error statistic p.value player_name     
+     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;           
+ 1 1630649     75.4      52.0     1.45    0.147 Stanley Umude   
+ 2 1630648     60.6      53.1     1.14    0.253 Jordan Schakel  
+ 3 1628993     49.1      31.5     1.56    0.119 Alize Johnson   
+ 4 1630250     49.1      36.4     1.35    0.177 Marko Simonovic 
+ 5 1629126     45.4      51.2     0.888   0.375 Deonte Burton   
+ 6 1631495     45.1      60.3     0.748   0.455 Donovan Williams
+ 7 1630600     40.1      31.7     1.27    0.205 Isaiah Mobley   
+ 8  203999     36.2      27.5     1.32    0.187 Nikola Jokic    
+ 9 1628973     35.6      27.4     1.30    0.193 Jalen Brunson   
+10 1631112     35.1      30.7     1.14    0.253 Kendall Brown   </code></pre>
+</div>
+</div>
+<p>We start to see names that make sense, like Nikola Jokic who was one of the best players in the NBA during the 2022-23 season. We also notice the difference in magnitude now for the coefficient estimates compared to the previous score differential model. This is because the response is on the scale of points per 100 possessions.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-important no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Active Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>QUESTION:</strong> Using the results of your <code>margin</code>-based model. Create a visualization displaying the distribution of the player coefficients. Describe what you observe about this distribution.</p>
+<p><strong>ANSWER:</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>rosenbaum_margin_coef <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> estimate)) <span class="sc">+</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"APM estimate"</span>, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="intro_nba_rapm_SOLUTIONS_files/figure-html/apm-coef-distr-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can see that the coefficient distribution is roughly normal looking! We observe that most players display coefficients within a reasonable range but we do see some extreme looking values on the tail ends. This motivates the role of thinking about a group-level distribution for which player coefficients may come from.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-important no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Thought Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>QUESTION:</strong> What do you think are potential issues and concerns with the APM model?</p>
+<p><strong>ANSWER:</strong> There are number of different concerns regarding the APM model:</p>
+<ul>
+<li><p><strong>High-dimensional problem</strong>: There are hundreds of player coefficients to estimate in the model. This is a high-dimensional regression problem, thus meaning that we need sufficient amount of data to estimate appropriately.</p></li>
+<li><p><strong>Multicollinearity</strong>: Players are often substituted in and out simultaneously, or for one another - without adjustments. This will lead to collinearity between player columns, which can result in larger variance for the player coefficients, as well as decreases the precision of estimates. The challenge of multicollinearity makes it more difficult to parse between which players deserve more credit.</p></li>
+<li><p><strong>Limited playing time</strong>: For players with limited playing time, we may observe unstable and extreme coefficient values. There are different ways to address this (such as the way we’ll handle it in RAPM), but one option in APM is to replace all players with limited playing time as single column, i.e., <em>replacement-level</em> player.</p></li>
+</ul>
+</div>
+</div>
+</section>
+<section id="regularized-adjusted-plus-minus-rapm" class="level3">
+<h3 class="anchored" data-anchor-id="regularized-adjusted-plus-minus-rapm">Regularized Adjusted Plus-Minus (RAPM)</h3>
+<p>Next, we’ll address some of the common issues facing APM models using <strong>Regularized Adjusted Plus-Minus (RAPM)</strong>. The first public instance of RAPM for basketball was by <a href="https://www.sloansportsconference.com/research-papers/improved-nba-adjusted-using-regularization-and-out-of-sample-testing">Joe Sill (2010) in an award winning research paper</a> at a sports analytics conference. This version of RAPM relies on <strong>ridge regression</strong> to apply a penalty term for shrinking player coefficients. More specifically, we can update the previous formula for estimating player coefficients as follows:</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\beta}}^{ridge} = \underset{\boldsymbol{\beta} \in \mathbb{R}^p}{\text{arg min}} \sum_{t = 1}^T (y_t - X_t \boldsymbol{\beta})^2 + \lambda \sum_{j = 1}^p \beta_p^2
+\]</span></p>
+<p>This objective for the ridge regression coefficients is effectively the combination of the <strong>loss</strong> (the traditional least squares objective) and newly included <strong>penalty term</strong> (the sum of the squared coefficient values). The ridge regression coefficients are solved for while balancing these two terms simultaneously, with the amount <strong>penalization</strong> controlled by <span class="math inline">\(\lambda\)</span>. We can consider <span class="math inline">\(\lambda\)</span> to be a <strong>tuning parameter</strong> that controls the strength of the penalty term, and we will want to choose the <span class="math inline">\(\lambda\)</span> based on out-of-sample performance.</p>
+<div class="callout callout-style-default callout-important no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Thought Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>QUESTION:</strong> What happens to the coefficients if <span class="math inline">\(\lambda = 0\)</span>? What happens to the coefficients as <span class="math inline">\(\lambda \rightarrow + \infty\)</span>?</p>
+<p><strong>ANSWER:</strong></p>
+<ul>
+<li><p>If <span class="math inline">\(\lambda = 0\)</span>: we just observe the same coefficients from fitting ordinary least squares, with no penalty term included.</p></li>
+<li><p>As <span class="math inline">\(\lambda \rightarrow + \infty\)</span>: the coefficients shrink towards 0, but never actually equal zero.</p></li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip no-icon callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Challenging Exercise
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>QUESTION:</strong> Ignoring the context of RAPM models, suppose you regress a response variable <span class="math inline">\(Y\)</span> on two variables <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> where <span class="math inline">\(X_1 = X_2\)</span>. What is the solution to ridge regression in this case? Do you think this behavior is ideal in the context of estimating player effects in the presence of collinearity?</p>
+<p><strong>ANSWER:</strong></p>
+<p>If we plug in the two variables in the ridge regression objective function from above, and use the <a href="https://en.wikipedia.org/wiki/Norm_(mathematics)">Euclidean norm notation</a> of the squared terms, then the <strong>loss</strong> and <strong>penalty</strong> terms become:</p>
+<p><span class="math display">\[
+|| Y - X_1 \beta_1 - X_2 \beta_2 ||_2^2 + \lambda \beta_1^2 + \lambda \beta_2^2
+\]</span> And since <span class="math inline">\(X_1 = X_2\)</span>, we can set <span class="math inline">\(X = X_1 = X_2\)</span> so that this becomes:</p>
+<p><span class="math display">\[
+|| Y - X (\beta_1 + \beta_2) ||_2^2 + \lambda (\beta_1^2 + \beta_2^2)
+\]</span> Due to the quadratic constraint from <span class="math inline">\(\lambda (\beta_1^2 + \beta_2^2)\)</span>, the unique solution to this objective is to set <span class="math inline">\(\beta_1 = \beta_2\)</span>! Thus when two variables are perfectly equal to each other, they will receive equal coefficients in ridge regression.</p>
+<p>In the context of modeling player effects in sports, this can be useful because it is signaling that we do not know how to distinguish two players from each other if we only ever observed them together - so the resulting coefficients will treat them as equal. However, the downside is that we likely have prior knowledge about the players and could benefit from including that somehow. Incorporating priors into RAPM models via Bayesian regression is beyond the scope of this module.</p>
+</div>
+</div>
+</div>
+<p>We’ll now walk through how to fit a RAPM model using ridge regression. The most popular implementation of fitting ridge regression (and other common penalized regression models) in <code>R</code> is with the <a href="https://glmnet.stanford.edu/articles/glmnet.html"><code>glmnet</code> package</a>.</p>
+<p>First, grab only the player columns (i.e.&nbsp;the indicator variables in the original data), then convert to a matrix using <code>as.matrix()</code>, and store this as a new object named <code>player_matrix</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>player_matrix <span class="ot">&lt;-</span> nba_margin_apm_model_data <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="sc">-</span>margin) <span class="sc">|&gt;</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, the code chunk below performs 10 fold cross-validation to fit a ridge regression model using <code>glmnet</code>. The function <code>cv.glmnet</code> is used to perform the 10 fold cross-validation, evaluating the out-of-sample performance for a grid of <span class="math inline">\(\lambda\)</span> values. Fill in the missing code below using the above <code>player_matrix</code> as the predictors with the <code>margin</code> variable as the response:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Matrix</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'Matrix' was built under R version 4.2.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'Matrix'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:tidyr':
+
+    expand, pack, unpack</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loaded glmnet 4.1-8</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View help for function with:</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co"># help(cv.glmnet)</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ridge with 10 fold cv, no intercept and no standardization</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>fit_ridge_cv <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(<span class="at">x =</span> player_matrix,</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>                          <span class="at">y =</span> nba_margin_apm_model_data<span class="sc">$</span>margin,</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>                          <span class="at">alpha =</span> <span class="dv">0</span>,</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>                          <span class="at">intercept =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>                          <span class="at">standardize =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The following plot prints out the penalty selection for this model, with the choices for <span class="math inline">\(\lambda\)</span> displayed along the x-axis and the 10 fold cross-validation mean squared error displayed along the y-axis. The red points denote the average error across the 10 folds, with gray standard error intervals.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit_ridge_cv)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="intro_nba_rapm_SOLUTIONS_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The first vertical dashed line corresponds to the choice of <span class="math inline">\(\lambda\)</span> with the smallest average error across the 10 folds. The far right dashed line indicates the largest <span class="math inline">\(\lambda\)</span> that is within one standard error of the minimum error <span class="math inline">\(\lambda\)</span>. Using this <span class="math inline">\(\lambda\)</span> value is often referred to as the “one-standard error rule” as it implies picking a more “conservative” model with more penalized coefficients. In this case, we will prefer to choose the minimum error <span class="math inline">\(\lambda\)</span> indicated with the first vertical dashed line.</p>
+<div class="callout callout-style-default callout-important no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Thought Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>QUESTION:</strong> What do you think the implication is that all of the red points are within the gray standard error intervals for all possible <span class="math inline">\(\lambda\)</span> values?</p>
+<p><strong>ANSWER:</strong> This signals that in terms of out-of-sample performance, all of the choices of <span class="math inline">\(\lambda\)</span> are fairly similar, indicating large uncertainty about the model’s predictive performance. However, we are primarily interested in estimating player effects with RAPM and not necessarily concerned with the model’s predictive performance.</p>
+</div>
+</div>
+<p>We can easily plot the path of the ridge regression shrinkage, to see how the coefficients are pulled towards 0 as the penalty increases. The following code chunk shows this full path:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(fit_ridge_cv<span class="sc">$</span>glmnet.fit, <span class="at">xvar =</span> <span class="st">"lambda"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="intro_nba_rapm_SOLUTIONS_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Similar to the APM model analyis, we can again use the the <code>broom</code> package to make a tidy table of the coefficients for each player:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>tidy_ridge_coef <span class="ot">&lt;-</span> <span class="fu">tidy</span>(fit_ridge_cv<span class="sc">$</span>glmnet.fit)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>tidy_ridge_coef</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 53,900 × 5
+   term    step estimate lambda dev.ratio
+   &lt;chr&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;
+ 1 201939     1 2.77e-39   328.  1.45e-39
+ 2 201939     2 6.41e- 4   299.  3.30e- 4
+ 3 201939     3 7.23e- 4   273.  3.59e- 4
+ 4 201939     4 7.91e- 4   248.  3.93e- 4
+ 5 201939     5 8.69e- 4   226.  4.30e- 4
+ 6 201939     6 9.54e- 4   206.  4.70e- 4
+ 7 201939     7 1.05e- 3   188.  5.14e- 4
+ 8 201939     8 1.15e- 3   171.  5.62e- 4
+ 9 201939     9 1.27e- 3   156.  6.14e- 4
+10 201939    10 1.39e- 3   142.  6.70e- 4
+# ℹ 53,890 more rows</code></pre>
+</div>
+</div>
+<p>If you look closely, this returns 100 rows for each player in the data - because it is returning the coefficient for each player at each value of the <code>lambda</code> penalty. We can filter to the values for the optimal choice of <code>lambda</code> based on the cross-validation results, and then join our player names as before:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>rapm_ridge_coef <span class="ot">&lt;-</span> tidy_ridge_coef <span class="sc">|&gt;</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(lambda <span class="sc">==</span> fit_ridge_cv<span class="sc">$</span>lambda.min) <span class="sc">|&gt;</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert term to numeric:</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">term =</span> <span class="fu">as.numeric</span>(term)) <span class="sc">|&gt;</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Now join the player names:</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(nba_player_table, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"term"</span> <span class="ot">=</span> <span class="st">"player_id"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-important no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Active Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>QUESTION:</strong></p>
+<p>Now, display the top 10 players based on coefficient estimates. What do you think of list in comparison to the APM results. Does this list pass the “eye test”? (Search who won the NBA MVP in 2023.)</p>
+<p><strong>ANSWER:</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>rapm_ridge_coef <span class="sc">|&gt;</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(estimate, <span class="at">n =</span> <span class="dv">10</span>) <span class="sc">|&gt;</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(term, player_name, estimate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 3
+      term player_name     estimate
+     &lt;dbl&gt; &lt;chr&gt;              &lt;dbl&gt;
+ 1  203954 Joel Embiid         5.37
+ 2  203999 Nikola Jokic        4.59
+ 3 1629027 Trae Young          4.28
+ 4 1627783 Pascal Siakam       4.02
+ 5 1628973 Jalen Brunson       3.64
+ 6  201567 Kevin Love          3.59
+ 7  203110 Draymond Green      3.56
+ 8  201572 Brook Lopez         3.28
+ 9  203076 Anthony Davis       3.24
+10 1629627 Zion Williamson     3.22</code></pre>
+</div>
+</div>
+<p>Considering Embiid won the MVP last season, this list definitely passes the eye test (it’s honestly amazing how well this works for basketball data). For context, let’s view the bottom 10:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>rapm_ridge_coef <span class="sc">|&gt;</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_min</span>(estimate, <span class="at">n =</span> <span class="dv">10</span>) <span class="sc">|&gt;</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(term, player_name, estimate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 3
+      term player_name        estimate
+     &lt;dbl&gt; &lt;chr&gt;                 &lt;dbl&gt;
+ 1 1630558 Davion Mitchell       -3.92
+ 2 1630170 Devin Vassell         -3.86
+ 3 1629670 Jordan Nwora          -3.11
+ 4 1630598 Aaron Wiggins         -3.06
+ 5  203210 JaMychal Green        -3.02
+ 6 1630528 Josh Christopher      -2.95
+ 7 1630586 Usman Garuba          -2.93
+ 8 1631128 Christian Braun       -2.86
+ 9  203115 Will Barton           -2.59
+10 1630197 Aleksej Pokusevski    -2.45</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-important no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Active Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>QUESTION:</strong> Similar to before, create a visualization displaying the distribution of the player coefficients from this ridge regression RAPM. Describe what you observe about this distribution and how it compares to the APM coefficient distribution.</p>
+<p><strong>ANSWER:</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>rapm_ridge_coef <span class="sc">|&gt;</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> estimate)) <span class="sc">+</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>() <span class="sc">+</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"RAPM estimate"</span>, <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="intro_nba_rapm_SOLUTIONS_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can see that the RAPM coefficients also appear to roughly follow a Normal-like distribution, but we no longer observe extreme tails. Additionally, we can see that the center for this distribution is approximately 0! The use of penalization has shrunk players towards 0, serving as the average baseline for players. This leads to a nice interpretation that coefficients above 0 are above average in performance, while below 0 are below average in performance.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<p>You have now learned the basics behind RAPM models in the context of studying NBA player effects. We demonstrated how RAPM improves upon the simpler APM model, but there are still further questions and extensions to explore:</p>
+<ul>
+<li><p><strong>Evaluating and tuning RAPM models</strong>: We only considered tuning the <span class="math inline">\(\lambda\)</span> penalty via the default cross-validation in <code>glmnet</code> that relies on the observation-level response variable which in this case was the <code>margin</code> during an individual shift. However, the ultimate goal of the RAPM player coefficients could be for predicting game outcomes between two teams. One could tune the choice of <span class="math inline">\(\lambda\)</span> based on predicting the game outcomes as a difference between the sum of the home and away team ratings.</p></li>
+<li><p><strong>Alternative choices for design matrix</strong>: There is flexibility in the design matrix for RAPM models. We only considered the home/away version of the matrix in this module, but we could specify an alternative set-up so that offense and defense effects are estimated separately. This type of approach would split the shifts into possessions where one team is on offense and the other is on defense. Each player has two columns - one indicator column if they were on offense during the possession and another indicator if there were on defense. This provides two measures of player performance but can be more difficult to fit appropriately since this is doubling the dimensionality of the problem.</p></li>
+<li><p><strong>Prior information</strong>: This module only considered estimating player performance based on the observed appearances in games. But what if we have prior knowledge to tease apart players who often appear on the court together? We could account for priors via a Bayesian version of the RAPM model. Details of this type of approach will be left to be covered in a future module!</p></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/ryurko\.github\.io\/cmu_score_preprints");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Maintained by <a href="https://www.stat.cmu.edu/~ryurko/">Ron Yurko</a></p>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/ryurko/cmu_score_preprints/edit/main/module_resources/nba-rapm/intro_nba_rapm_SOLUTIONS.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/ryurko/cmu_score_preprints/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div><div class="cookie-consent-footer"><a href="#" id="open_preferences_center">Cookie Preferences</a></div></div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
