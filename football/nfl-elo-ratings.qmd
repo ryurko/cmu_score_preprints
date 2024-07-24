@@ -12,7 +12,7 @@ categories:
 
 ## Motivation
 
-<iframe width="560" height="315" src=https://www.youtube.com/watch?v=NwaEKxinKKM" title="Elo Ratings with Neil Paine" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/NwaEKxinKKM?si=NTT9J6bJfjGqq0oN" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 [Elo ratings](https://en.wikipedia.org/wiki/Elo_rating_system) are one of the most popular approaches for estimating player/team strength across a variety of sports. You can find a number of different sports examples [maintained by sportswriter Neil Paine](https://neilpaine.substack.com/t/elo-ratings), as well as older versions that were featured in the popular website [FiveThirtyEight](https://fivethirtyeight.com/features/the-best-mlb-teams-of-all-time-according-to-elo/). These dynamic ratings are adjusted for opponent strength and can be used for historical comparisons, such as [who is the greatest tennis player of all time?](https://tennisabstract.com/reports/wta_elo_ratings.html), and for predicting outcomes. In this module you will learn the basics of Elo ratings in the context of measuring NFL team strength, walking through steps to implement and assess Elo ratings from scratch in `R`.
 
