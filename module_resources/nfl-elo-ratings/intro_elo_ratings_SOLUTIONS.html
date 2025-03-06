@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.55">
+<meta name="generator" content="quarto-1.6.42">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -73,10 +73,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-f78ebb74f84f5b034f788ba387ef06a4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -422,7 +422,7 @@ CON DIV REG  SB  WC
 </section>
 <section id="background-information" class="level2">
 <h2 class="anchored" data-anchor-id="background-information">Background Information</h2>
-<p>Elo ratings were created by physicist <a href="https://en.wikipedia.org/wiki/Arpad_Elo">Arpad Elo</a> in the 1960s for rating chess players. The main idea behind Elo ratings is to create <strong>an exchange in rating points</strong> between players (or teams) after a match. The simplest version of this system was constructed to be a <strong>zero-sum</strong> rating, such that the winner gains <code>x</code> points while the same number of <code>x</code> points are subtracted from the loser’s rating. If the win was expected, the winner receives fewer points than if the win was unexpected (i.e., an upset) - where the expectation is set prior to the match. This system results in a <strong>dynamic rating</strong> that is adjusted for opponent quality.</p>
+<p>Elo ratings were created by physicist <a href="https://en.wikipedia.org/wiki/Arpad_Elo">Arpad Elo</a> in the 1950s for rating chess players. The point of the rating system is to compute ratings that could be used to estimate relative strength and predict game outcomes. The main idea behind Elo ratings is to create <strong>an exchange in rating points</strong> between players (or teams) after a match. The simplest version of this system was constructed to be a <strong>zero-sum</strong> rating, such that the winner gains <code>x</code> points while the same number of <code>x</code> points are subtracted from the loser’s rating. If the win was expected, the winner receives fewer points than if the win was unexpected (i.e., an upset) - where the expectation is set prior to the match. This system results in a <strong>dynamic rating</strong> that is adjusted for opponent quality.</p>
 </section>
 <section id="method-details" class="level2">
 <h2 class="anchored" data-anchor-id="method-details">Method Details</h2>
@@ -440,17 +440,17 @@ E_{\text{away}} = \frac{1}{1+10^{\left(R_{\text{home}}-R_{\text{away}}\right) / 
 <li>a <em>scaling factor</em> of 400 which can be <em>tuned</em> to yield better predictions (discussed in more detail below).</li>
 </ul>
 <p>A more general representation of the expected score would replace the choice of 10 with some constant (e.g., <span class="math inline">\(e\)</span>) and replace 400 with a tune-able quantity <span class="math inline">\(d\)</span>. For now though we will just use 10 and 400 since they are the original choices.</p>
-<p>While the above quantities represent the expectation of a game between teams with ratings <span class="math inline">\(R_{\text{home}}\)</span> and <span class="math inline">\(R_{\text{away}}\)</span>, we need a step to update the ratings after observing the game outcome. We can update we update the ratings for the home team based on the <em>observed score</em> <span class="math inline">\(S_{\text{home}}\)</span>:</p>
+<p>While the above quantities represent the expectation of a game between teams with ratings <span class="math inline">\(R_{\text{home}}\)</span> and <span class="math inline">\(R_{\text{away}}\)</span>, we need a step to update the ratings after observing the game outcome. We update the ratings for the home team based on the <em>observed score</em> <span class="math inline">\(S_{\text{home}}\)</span>:</p>
 <p><span class="math display">\[
 R^{\text{new}}_{\text{home}} = R_{\text{home}} + K \cdot (S_{\text{home}} - E_{\text{home}})
 \]</span></p>
 <p>The observed score <span class="math inline">\(S_{\text{home}}\)</span> is based on the game outcome such that,</p>
 <ul>
 <li><span class="math inline">\(S_{\text{home}} = 1\)</span> if the home team wins,</li>
-<li><span class="math inline">\(S_{\text{home}} = 0.5\)</span> if it is a draw, or</li>
+<li><span class="math inline">\(S_{\text{home}} = 0.5\)</span> if it is a tie, or</li>
 <li><span class="math inline">\(S_{\text{home}} = 0\)</span> if the home team loses.</li>
 </ul>
-<p>We compute the updated rating for the away team <span class="math inline">\(R^{\text{new}}_{\text{away}}\)</span> in a similar manner, by replacing home team quantities with those with respect to the away team.</p>
+<p>We compute the updated rating for the away team <span class="math inline">\(R^{\text{new}}_{\text{away}}\)</span> in a similar manner, by replacing home team quantities with those for the away team.</p>
 <p>The quantity <span class="math inline">\(K\)</span> is known as the <strong>update factor</strong>, indicating the maximum number of Elo rating points a team gains from winning a single game (and how many points are subtracted if they lose). This is a <strong>tuning parameter</strong>, which ideally should be selected to yield optimal predictive performance.</p>
 <div class="callout callout-style-default callout-important no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -458,7 +458,7 @@ R^{\text{new}}_{\text{home}} = R_{\text{home}} + K \cdot (S_{\text{home}} - E_{\
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Thought Exercise
+Thought Exercise #1
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -480,7 +480,7 @@ Thought Exercise
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Active Exercise
+Active Exercise #1
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -507,7 +507,7 @@ Active Exercise
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Active Exercise
+Active Exercise #2
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -562,7 +562,7 @@ Active Exercise
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Active Exercise
+Active Exercise #3
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -878,7 +878,7 @@ Challenge: Missing Team ratings
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Thought Exercise
+Thought Exercise #2
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -893,7 +893,7 @@ Thought Exercise
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Active Exercise
+Active Exercise #4
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -921,7 +921,7 @@ Active Exercise
 <i class="callout-icon no-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Challenging Active Exercise
+Challenge Exercise
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
@@ -1100,6 +1100,7 @@ Challenging Active Exercise
 <ul>
 <li><p>For football fans, you can simulate NFL seasons using your Elo ratings with the <a href="https://nflseedr.com/articles/nflsim.html"><code>nflseedR</code> package</a>.</p></li>
 <li><p>The <a href="https://eheinzen.github.io/elo/"><code>elo</code> package</a> in <code>R</code> provides convenient functions for computing Elo ratings, similar to the functions we defined above.</p></li>
+<li><p>The <a href="https://cran.r-project.org/web/packages/PlayerRatings/index.html"><code>PlayerRatings</code> package</a> in <code>R</code> that implements Elo ratings among other methods.</p></li>
 <li><p>An overview of the popular <a href="https://en.wikipedia.org/wiki/Glicko_rating_system">Glicko rating system by statistician Mark Glickman</a> that quantifies uncertainty about the ratings.</p></li>
 </ul>
 
@@ -1110,7 +1111,7 @@ Challenging Active Exercise
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p>Technically, it represents the probability of winning and <em>half</em> the probability of drawing, but for our purposes we will just treat this as the probability of winning due to how rare draws are in the NFL.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>Technically, it represents the probability of winning and <em>half</em> the probability of tying, but for our purposes we will just treat this as the probability of winning due to how rare ties are in the NFL.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -1195,8 +1196,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -1307,7 +1306,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {

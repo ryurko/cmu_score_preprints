@@ -43,7 +43,7 @@ The `week` column just increases in the correct order, which will be convenient 
 
 ## Background Information
 
-Elo ratings were created by physicist [Arpad Elo](https://en.wikipedia.org/wiki/Arpad_Elo) in the 1960s for rating chess players. The main idea behind Elo ratings is to create **an exchange in rating points** between players (or teams) after a match. The simplest version of this system was constructed to be a **zero-sum** rating, such that the winner gains `x` points while the same number of `x` points are subtracted from the loser's rating. If the win was expected, the winner receives fewer points than if the win was unexpected (i.e., an upset) - where the expectation is set prior to the match. This system results in a **dynamic rating** that is adjusted for opponent quality.
+Elo ratings were created by physicist [Arpad Elo](https://en.wikipedia.org/wiki/Arpad_Elo) in the 1950s for rating chess players. The point of the rating system is to compute ratings that could be used to estimate relative strength and predict game outcomes. The main idea behind Elo ratings is to create **an exchange in rating points** between players (or teams) after a match. The simplest version of this system was constructed to be a **zero-sum** rating, such that the winner gains `x` points while the same number of `x` points are subtracted from the loser's rating. If the win was expected, the winner receives fewer points than if the win was unexpected (i.e., an upset) - where the expectation is set prior to the match. This system results in a **dynamic rating** that is adjusted for opponent quality.
 
 ## Method Details
 
@@ -59,7 +59,7 @@ $$
 E_{\text{away}} = \frac{1}{1+10^{\left(R_{\text{home}}-R_{\text{away}}\right) / 400}}.
 $$ These expected scores represent the **probability of winning**[^1], e.g., $E_{\text{home}}$ represents the probability of winning for the home team.
 
-[^1]: Technically, it represents the probability of winning and *half* the probability of drawing, but for our purposes we will just treat this as the probability of winning due to how rare draws are in the NFL.
+[^1]: Technically, it represents the probability of winning and *half* the probability of tying, but for our purposes we will just treat this as the probability of winning due to how rare ties are in the NFL.
 
 The choice of 10 and 400 in the denominator may appear arbitrary at first, but they correspond to:
 
@@ -68,7 +68,7 @@ The choice of 10 and 400 in the denominator may appear arbitrary at first, but t
 
 A more general representation of the expected score would replace the choice of 10 with some constant (e.g., $e$) and replace 400 with a tune-able quantity $d$. For now though we will just use 10 and 400 since they are the original choices.
 
-While the above quantities represent the expectation of a game between teams with ratings $R_{\text{home}}$ and $R_{\text{away}}$, we need a step to update the ratings after observing the game outcome. We can update we update the ratings for the home team based on the *observed score* $S_{\text{home}}$:
+While the above quantities represent the expectation of a game between teams with ratings $R_{\text{home}}$ and $R_{\text{away}}$, we need a step to update the ratings after observing the game outcome. We update the ratings for the home team based on the *observed score* $S_{\text{home}}$:
 
 $$
 R^{\text{new}}_{\text{home}} = R_{\text{home}} + K \cdot (S_{\text{home}} - E_{\text{home}})
@@ -77,15 +77,15 @@ $$
 The observed score $S_{\text{home}}$ is based on the game outcome such that,
 
 -   $S_{\text{home}} = 1$ if the home team wins,
--   $S_{\text{home}} = 0.5$ if it is a draw, or
+-   $S_{\text{home}} = 0.5$ if it is a tie, or
 -   $S_{\text{home}} = 0$ if the home team loses.
 
-We compute the updated rating for the away team $R^{\text{new}}_{\text{away}}$ in a similar manner, by replacing home team quantities with those with respect to the away team.
+We compute the updated rating for the away team $R^{\text{new}}_{\text{away}}$ in a similar manner, by replacing home team quantities with those for the away team.
 
 The quantity $K$ is known as the **update factor**, indicating the maximum number of Elo rating points a team gains from winning a single game (and how many points are subtracted if they lose). This is a **tuning parameter**, which ideally should be selected to yield optimal predictive performance.
 
 ::: callout-important
-## Thought Exercise
+## Thought Exercise #1
 
 **QUESTION:** Given the above equation for $R^{\text{new}}_{\text{home}}$, what do you think will happen as you increase $K$? Does a single game cause a larger or smaller change on a team's rating? Likewise, what do you think will happen if you decrease $K$? Describe what you expect to observe in 1-3 sentences.
 
@@ -111,7 +111,7 @@ You will need to delete `#| eval:false` from every code chunk in the remainder o
 We will start by creating two helper functions to compute the expected scores and updated ratings after a game.
 
 ::: callout-important
-## Active Exercise
+## Active Exercise #1
 
 First, based on the above formulas for expected score, complete the function `calc_expected_score` that takes in as input a `team_rating` and `opp_team_rating` then returns the expected score for the `team` relative to the `opp_team`. For ease, your function should use the base 10 logistic curve and scaling factor of 400 as fixed quantities.
 
@@ -135,7 +135,7 @@ calc_expected_score <- function(team_rating, opp_team_rating) {
 :::
 
 ::: callout-important
-## Active Exercise
+## Active Exercise #2
 
 Next, complete the `calc_new_rating` function that takes in an initial `team_rating`, the `observed_score` and `expected_score` with respect to that team, along with a choice of the `update_factor` $K$ to return the new rating. For now, we will just consider $K = 20$ as the default choice.
 
@@ -175,7 +175,7 @@ nfl_elo_ratings
 ```
 
 ::: callout-important
-## Active Exercise
+## Active Exercise #3
 
 **QUESTION:** The code chunk below outlines the `for` loop to be used in updating team ratings after every game during the 2023-24 season in the `nfl_games` dataset. Fill in the missing portions code marked by `???` using your above `calc_expected_score` and `calc_new_rating` functions. While this module does not cover all of the basics of [`tidyverse` data wrangling](https://rstudio.github.io/cheatsheets/html/data-transformation.html?_gl=1*1wfj8xl*_ga*NDE2OTUyOTg3LjE3MTMwMjgzMzI.*_ga_2C0WZ1JHG0*MTcyMDQ4ODk0Ny40LjAuMTcyMDQ4ODk0Ny4wLjAuMA..), the code comments should help make the various steps clear.
 
@@ -437,7 +437,7 @@ $$
 $$ where the use of subscript $i$ refers to the outcome and expectation for the home team in game $i$.
 
 ::: callout-important
-## Thought Exercise
+## Thought Exercise #2
 
 **QUESTION:** Given the above formula for computing the Brier score, what do you think is a better indicator predictive accuracy: a lower or higher Brier score?
 
@@ -449,7 +449,7 @@ $$ where the use of subscript $i$ refers to the outcome and expectation for the 
 We will compute the Brier score using our NFL Elo ratings, and compare the performance to always using a 50/50 probability for every game, i.e., as if we never learned any information over the course of the season.
 
 ::: callout-important
-## Active Exercise
+## Active Exercise #4
 
 **QUESTION:** Compute and report the Brier score for both: (1) the Elo rating based `home_win_prob` and (2) as if you predicted the probability to be 0.5 for every game. Which approach performs better? Are you surprised by the outcome?
 
@@ -465,7 +465,7 @@ We will compute the Brier score using our NFL Elo ratings, and compare the perfo
 Although you have just implemented and evaluated the use of Elo ratings in the context of NFL games, so far we have just considered an update factor of $K = 20$. But is there a more optimal choice?
 
 ::: {.callout-important collapse="true"}
-## Challenging Active Exercise
+## Challenge Exercise
 
 **QUESTION:** You will now proceed to different choices for the update factor. Rather than tediously code the entire process from above multiple times, we will wrap up the code to compute the Brier score for a given choice of $K$ inside a function `compute_elo_brier_score`. The code chunk in the **ANSWER** portion below provides you with a template to fill out, this function takes in both the `nfl_games` data and input for the `update_factor` $K$. Once you have completed the function, compute and report the Brier score for $K =$ 5, 20, 50, and 100 (your value for $K = 20$ should match the previous output). Which choice of $K$ yields the best Brier score?
 
@@ -526,5 +526,7 @@ You may find these additional resources helpful:
 -   For football fans, you can simulate NFL seasons using your Elo ratings with the [`nflseedR` package](https://nflseedr.com/articles/nflsim.html).
 
 -   The [`elo` package](https://eheinzen.github.io/elo/) in `R` provides convenient functions for computing Elo ratings, similar to the functions we defined above.
+
+-   The [`PlayerRatings` package](https://cran.r-project.org/web/packages/PlayerRatings/index.html) in `R` that implements Elo ratings among other methods.
 
 -   An overview of the popular [Glicko rating system by statistician Mark Glickman](https://en.wikipedia.org/wiki/Glicko_rating_system) that quantifies uncertainty about the ratings.

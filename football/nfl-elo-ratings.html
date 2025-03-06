@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.55">
+<meta name="generator" content="quarto-1.6.42">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -40,10 +40,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-f78ebb74f84f5b034f788ba387ef06a4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -333,7 +333,7 @@ cookieconsent.run({
 <li>Compute the expected outcome or predicted probability based on player/team ratings.</li>
 <li>Update ratings following the observed outcome of a match/game.</li>
 <li>Implement the complete Elo ratings framework in <code>R</code> for a full NFL season.</li>
-<li>Assess Elo rating predictions using Brier score.</li>
+<li>Assess Elo rating predictions using <a href="https://en.wikipedia.org/wiki/Brier_score">Brier scores</a>.</li>
 <li>Tune the update factor and other settings to yield more optimal predictions.</li>
 </ol>
 </section>
@@ -358,7 +358,7 @@ Prerequisites
 <li>Familiar with <code>R</code> with the ability to read and write functions.</li>
 <li>Some exposure to predicting outcomes with probabilities.</li>
 </ul>
-<p>The module has sections indicating which portions are challenging exercises, and is designed to take an undergraduate student roughly 3-4 hours to complete.</p>
+<p>The module has sections indicating which portions are challenging exercises, and is designed to take an undergraduate student roughly 1-3 hours to complete (and 3-4 hours with the challenge exercise).</p>
 </div>
 </div>
 <p><a href="../module_resources/nfl-elo-ratings/_intro_elo_ratings.qmd">Student assignment qmd file</a></p>
@@ -450,8 +450,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -562,7 +560,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
