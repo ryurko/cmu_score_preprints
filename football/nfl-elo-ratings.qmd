@@ -23,7 +23,7 @@ By the end of this module, you will be able to:
 1. Compute the expected outcome or predicted probability based on player/team ratings.
 2. Update ratings following the observed outcome of a match/game.
 3. Implement the complete Elo ratings framework in `R` for a full NFL season.
-4. Assess Elo rating predictions using Brier score.
+4. Assess Elo rating predictions using [Brier scores](https://en.wikipedia.org/wiki/Brier_score).
 5. Tune the update factor and other settings to yield more optimal predictions.
 
 ## Data
@@ -40,7 +40,7 @@ Prior to working on through this module, students are expected to know the follo
 * Familiar with `R` with the ability to read and write functions.
 * Some exposure to predicting outcomes with probabilities.
 
-The module has sections indicating which portions are challenging exercises, and is designed to take an undergraduate student roughly 3-4 hours to complete.
+The module has sections indicating which portions are challenging exercises, and is designed to take an undergraduate student roughly 1-3 hours to complete (and 3-4 hours with the challenge exercise).
 
 :::
 
